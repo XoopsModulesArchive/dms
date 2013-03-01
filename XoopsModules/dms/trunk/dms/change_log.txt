@@ -7,7 +7,6 @@ Note:  This "Future Release" list may change.
 To-Do:  *  Add support for pdftk.
 Added:  *  DMS now has it's own, separate list of groups.  The administrator can pick between using the Xoops Groups or using the DMS groups.
 
-To-Do:  *  Add document expiration system.
 Change: *  Eliminated the empty browser page that was displayed when a document is checked-out, viewed, etc.  (Is this possible?)
 
 To-Do:  *  Capability to set default group for setting user permissions
@@ -19,10 +18,7 @@ To-Do:  *  MMS integration:  Sort by date created, newest to oldest.
 To-Do:  *  When a document is at the end of a lifecycle, the last stage name should be displayed in the options page.
 To-Do:  *  Ability to remove a document from a lifecycle.
 
-To-Do: ** Search link on properties page.
-
 Added:  * Job to delete documents from a folder.
-Added:  * Job to archive documents to a folder.
 
 Change: * On the folder_options screen, for administrators, the Options menu no longer is displayed under other items on the screen.
 
@@ -30,8 +26,67 @@ Change: * Left-justify statistics page.
 
 Change:  *URL's are now alphabetically sorted with the documents when listed in the export file(s).
 
-Version 1.91
 
+***  FIX AUDITING FOR url_move.php
+Change: * When importing multiple documents only .zip files are allowed.
+Change: * When a document is copied, the destination document can inherit the permissions from the new parent folder.  This will only occur if the 
+          permissions inheritance is enabled.  If the permissions inheritance is not enabled, the original file permissions are now copied.  
+Change: * Fixed bug that prevented the button from appearing, on the Update Manager, that allows you to write the job server configuration.
+
+Change:*  Set proper permissions on Document Expiration system.
+Change: * Set url_options.php such that anyone can view the page.
+
+Removed: * folder_expand.php, folder_close_all.php, and folder_contract.php as these functions are now contained in their respective
+          php pages.
+
+Version 1.94
+Added:    dms_inc_functions_test() has been added to test the inclusion of inc_dms_functions.php when developing.
+Added:    dms_send_emai() can now be used to send an attachment that is not located in the repository.
+Added:    A job can now be scheduled to delete all documents in a folder.
+Added:    Documents can now be removed from a lifecycle.
+Added:    By setting a folder configuration flag, the document comments can now be displayed on the main screen.
+Added:    URL's can now be e-mailed.
+Change:   Disabled mime type determination via the "file" command, on Linux systems.
+Change:   The MMS integration no longer displays the standard header functions.  (i.e. Import Document, Create Folder, etc.)
+Change:   Fixed an issue where forcing a folder to display only worked on the second attempt to display the folder.
+Change:   Created an object select page (obj_select.php).  This page is to be used anywhere a folder or file is selected.
+Change:   folder_content_report.php no longer reports deleted file.
+Change:   The job server no longer publishes deleted files.
+Change:   The folder_content_report.php has been modified so that deleted files are no longer displayed.
+Removed:  With the exception of the main screen, the menu bar has been removed from all screens.
+
+Version 1.93
+Added:    Links can be created to documents and folders.  Note:  This feature is currently disabled.
+Added:    Folder copy system for administrators.
+Change:   Re-wrote most of the user interface code to ease maintainablilty.
+
+Version 1.92
+Added:    Created a block that contains all of the document/folder/url creation buttons.
+Added:    Administrators can globally change user ownership on documents.  For example, if a user leaves an organization, all documents
+          owned by that user can be transferred to another user.  Additionally, if selected, all other permissions for that user can
+          be deleted.
+Added:    Document expiration system.
+Added:    Properties search, for a document name, can now be initiated from a query string.  Use search_prop.php?search_name=<name>
+Added:    Full text search can now be initiated from a query string.  Use search_ft.php?search_query=<string>
+Added:    Document view counter has been added.  This is incremented only when a document is viewed.
+Added:    The maximum size, of an uploaded file, is now displayed in the error message if the document was too large to upload.
+Added:    A time stamp is now applied when adding links to other web pages.
+Added:    Groups can now be e-mailed documents.
+Added:    URL's can now be moved and copied.
+Added:    Auditing information can now be displayed for folders and sub-folders, in one report.
+Change:   User ID's are now resolved when displaying audit logs.
+Change:   The document/folder/url creation buttons are now displayed at the top of almost every page.
+Change:   Administrators can now move or copy any and all documents, regardless of their being in a lifecycle.
+Change:   Left justified the Lifecycle Name and Lifecycle Stage, in file_options.php under the Information section.
+Change:   Job server now sorts documents correctly by FILO, when publishing documents for external display.
+Change:   Alphabetical document sorting is now reset when a user changes folders.
+Change:   Misc. minor user interface changes.
+Change:   Removed _binfilter.sh requirement for full text search engine and modified the swish-e.conf file.
+Change:   Improved the viewing of documents that do not have extensions.
+Change:   Permissions propagation now works in PHP 5.
+Change:   The ADN system has been modified such that the mask character is ignored when searching for the mask to replace.
+
+Version 1.91
 Added:    Addition of the time_stamp_expire column, in dms_objects, for future support of document expiration.
 Change:   Document Owner is always displayed in the Information section of the file_options.php screen.
 Change:   Moved Alpha-filtering and paging to the top of the page, on the main screen.

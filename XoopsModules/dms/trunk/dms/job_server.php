@@ -31,61 +31,33 @@ include_once 'inc_defines.php';
 include_once 'inc_extern_dmsdb_access.php';
 include_once 'inc_job_server_functions.php';
 
-/*
-
-$dms_config = array();
-
-function db_connect()
-	{
-	$conn = mysql_connect(JS_XOOPS_DB_HOST,JS_XOOPS_DB_USER,JS_XOOPS_DB_PASS);
-	mysql_select_db(JS_XOOPS_DB_NAME,$conn);
-	}
-
-function db_getarray($result)
-	{
-	return mysql_fetch_array($result);
-	}
-
-function db_prefix($table)
-	{
-	return (JS_XOOPS_DB_PREFIX."_".$table);
-	}
-	
-function db_query($query, $instruct = "")
-	{
-	$result = mysql_query($query);
-	
-	if(stristr($query, "SELECT") != FALSE) $num_rows = mysql_num_rows($result);
-	else $num_rows = 0;
-	
-	if ( ($num_rows == 1) && (strlen($instruct) > 0 ) ) 
-		{
-		$result = mysql_fetch_object($result);
-		if($instruct == "ROW") return $result;
-		$result = $result->$instruct;
-		}
-	
-	return $result;
-	}
-
-function get_config()
-	{
-	global $dms_config;
-	
-	$query = "SELECT * from ".db_prefix("dms_config");
-	$result = db_query($query);
-
-	while($result_data = db_getarray($result))
-		{
-		$dms_config[$result_data['name']] = $result_data['data'];
-		}
-	}
-*/
 function job_execute_script($script)
 	{
 	exec($script);
 	}
+
+function job_expire_docs()
+	{
+	$current_time = date('U');
 	
+	$query  = "SELECT obj_id FROM ".db_prefix("dms_objects")." ";
+	$query .= "WHERE time_stamp_expire > '0' AND time_stamp_expire < '".$current_time."'";
+//print $query;
+	$expired_documents = db_query($query);
+//print "Expire Documents:";
+	// Loop through each individual job
+	while($individual_expired_document = db_getarray($expired_documents))
+		{
+		$query  = "UPDATE ".db_prefix("dms_objects")." ";
+		$query .= "SET time_stamp_expire = '0' WHERE obj_id='".$individual_expired_document['obj_id']."'";
+		db_query($query);
+		
+		purge_document($individual_expired_document['obj_id']);
+//print " ".$individual_expired_document['obj_id'];
+		}
+//print "\n";
+	}
+		
 function job_extern_pub($folder_id, $depth, $num_docs)
 	{
 	global $dms_config;
@@ -113,7 +85,8 @@ function job_extern_pub_recurse_folder($folder_id, $current_depth, $max_depth, $
 	$query  = "SELECT obj_id,obj_name,obj_type FROM ".db_prefix("dms_object_perms")." AS dop ";
 	$query .= "INNER JOIN ".db_prefix("dms_objects")." AS do ON do.obj_id = dop.ptr_obj_id ";
 	$query .= "WHERE everyone_perms >= '2' AND (obj_type = '0' OR obj_type='40') AND obj_owner = '".$folder_id."' ";
-	$query .= "ORDER BY time_stamp_create LIMIT ".$num_docs;
+	$query .= "AND obj_status = '0' ";    // Ensure that deleted objects are not published.
+	$query .= "ORDER BY time_stamp_create desc LIMIT ".$num_docs;
 	$result = db_query($query);
 
 	// Store the documents in a file.
@@ -143,10 +116,6 @@ function job_extern_pub_recurse_folder($folder_id, $current_depth, $max_depth, $
 		job_extern_pub_recurse_folder($result_data['obj_id'],($current_depth + 1), $max_depth, $num_docs, $file_pointer);
 		}
 	}
-	
-	
-	
-	
 	
 function job_fts()
 	{
@@ -212,6 +181,186 @@ function job_perms_change($obj_id,$pg_obj_id)
 		}
 	}
 
+function job_purge_folder($obj_id)                   //  $obj_id is the object id of the folder to purge
+	{
+	global $dms_config;
+
+	//  Get a list of all documents in the folder to purge.
+	$query  = "SELECT obj_id, obj_type FROM ".db_prefix("dms_objects")." ";
+	$query .= "WHERE obj_owner='".$obj_id."' AND (";
+	$query .= "obj_type = '".FILE."' OR obj_type = '".FILELINK."' OR ";
+	$query .= "obj_type = '".ROUTEDDOC."' OR obj_type = '".WEBPAGE."' OR ";
+	$query .= "obj_type = '".FOLDERLINK."')";
+	$result = db_query($query);
+
+	//  Purge the documents
+	while($result_data = db_getarray($result))
+		{
+		$obj_id = $result_data['obj_id'];
+
+		// Get a list of the routed documents and delete the perms table entries, set the status on the inboxes
+		$query  = "SELECT obj_id,obj_owner FROM ".db_prefix("dms_objects")." ";
+		$query .= "WHERE ptr_obj_id='".$obj_id."' AND obj_type='".ROUTEDDOC."'";
+		$sub_result = db_query($query);
+
+		while($sub_result_data = db_getarray($sub_result))
+			{
+			set_inbox_status($sub_result_data['obj_owner']);
+	
+			$query  = "DELETE FROM ".db_prefix("dms_object_perms")." ";
+			$query .= "WHERE ptr_obj_id='".$sub_result_data['obj_id']."'";
+			db_query($query);
+
+			// Delete the routing data
+			$query  = "DELETE FROM ".db_prefix("dms_routing_data")." ";
+			$query .= "WHERE obj_id='".$sub_result_data['obj_id']."'";
+			db_query($query);
+			}
+
+		//
+		// Delete all database entries
+		//	
+	
+		// Delete the document entry
+		$query  = "DELETE FROM ".db_prefix("dms_objects")." ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		
+		// Delete the entries for any routed documents
+		$query  = "DELETE FROM ".db_prefix("dms_objects")." ";
+		$query .= "WHERE ptr_obj_id='".$obj_id."' AND obj_type='".ROUTEDDOC."'";
+		db_query($query);
+
+		// Delete the permissions entry
+		$query  = "DELETE FROM ".db_prefix("dms_object_perms")." ";
+		$query .= "WHERE ptr_obj_id='".$obj_id."'";
+		db_query($query);
+		
+		// Delete the properties entries
+		$query  = "DELETE FROM ".db_prefix("dms_object_properties")." ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		
+		// Delete the audit log entries
+		$query  = "DELETE FROM ".db_prefix("dms_audit_log")." ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		
+		//  Delete all versions of the actual file
+		$query  = "SELECT file_path FROM ".db_prefix("dms_object_versions")." ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		$fp_result = db_query($query);
+		
+		while($fp_result_data=db_getarray($fp_result))
+			{
+			$file_path = $dms_config['doc_path']."/".$fp_result_data['file_path'];
+			unlink($file_path);
+			}
+		
+		$query  = "DELETE from ".db_prefix("dms_object_versions")." ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		}
+	}
+
+function purge_document($obj_id)
+	{
+	global $dms_config;
+	
+	// Always delete linked objects (routed documents)
+	$query  = "DELETE from ".db_prefix("dms_objects")." ";
+	$query .= "WHERE ptr_obj_id='".$obj_id."'";
+	db_query($query);
+	
+	// if purge_level is FLAGGING (0) then just set dms_objects.obj_status to PURGED_FS (3) 
+	if($dms_config['purge_level'] == FLAGGING)
+		{
+		$query  = "UPDATE ".db_prefix("dms_objects")." ";
+		$query .= "SET obj_status='".PURGED_FS."', time_stamp_delete='".time()."' ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		}
+
+	// if purge_level is FILES (1) then just set dms_objects.obj_status to PURGED_FD (4) 
+	if($dms_config['purge_level'] == FILES)
+		{
+		$query  = "UPDATE ".db_prefix("dms_objects")." ";
+		$query .= "SET obj_status='".PURGED_FD."', current_version_row_id='0', time_stamp_delete='".time()."' ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		}
+	
+	// if purge_level is TOTAL (2) then delete all related database entries 
+	if($dms_config['purge_level'] == TOTAL)
+		{
+		$query  = "DELETE from ".db_prefix("dms_objects")." ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		
+		$query  = "DELETE from ".db_prefix("dms_object_perms")." ";
+		$query .= "WHERE ptr_obj_id='".$obj_id."'";
+		db_query($query);
+		
+		$query  = "DELETE from ".db_prefix("dms_object_properties")." ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		
+		$query  = "DELETE from ".db_prefix("dms_audit_log")." ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		
+		$query  = "DELETE from ".db_prefix("dms_routing_data")." ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		}
+
+	// If purge_level is FILES (1) or TOTAL (2) then delete the files in the repository.
+	if(($dms_config['purge_level'] == FILES) || ($dms_config['purge_level'] == TOTAL))
+		{
+		$query  = "SELECT file_path FROM ".db_prefix("dms_object_versions")." ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		$result = db_query($query);
+		
+		while($result_data=db_getarray($result))
+			{
+			$file_path = $dms_config['doc_path']."/".$result_data['file_path'];
+			unlink($file_path);
+			}
+		
+		$query  = "DELETE from ".db_prefix("dms_object_versions")." ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		}
+	}
+
+function set_inbox_status($obj_id)
+	{
+	//global $dmsdb;
+
+	// Check to see if this $obj_id is an inbox
+	$query  = "SELECT obj_type FROM ".db_prefix('dms_objects')." ";
+	$query .= "WHERE obj_id = '".$obj_id."'";
+	$obj_type = db_query($query,'obj_type');
+
+	if( ($obj_type == INBOXFULL) || ($obj_type == INBOXEMPTY) )
+		{
+		// Get the number of documents in the inbox
+		$query  = "SELECT count(*) as num FROM ".db_prefix('dms_objects')." ";
+		$query .= "WHERE obj_owner='".$obj_id."'";
+		$number_of_docs = db_query($query,'num');
+
+		$obj_type=INBOXEMPTY;
+		if ($number_of_docs > 0) $obj_type = INBOXFULL;
+
+		// Set the status of the inbox
+		$query  = "UPDATE ".db_prefix('dms_objects')." SET obj_type='".$obj_type."' ";
+		$query .= "WHERE obj_id='".$obj_id."'";
+		db_query($query);
+		}
+	}
+
+
+	
 //  *************************
 //  Beginning of Main Routine
 //  *************************
@@ -248,6 +397,9 @@ while($individual_job = db_getarray($jobs))
 			case EXTERN_PUB:	
 				job_extern_pub($individual_job['obj_id_a'],$individual_job['obj_id_b'],$individual_job['obj_id_c']);	break;
 			case EXEC_SCRIPT:	job_execute_script($individual_job['text']);						break;
+			case EXPIRE_DOCS:	job_expire_docs();
+			case PURGE_FOLDER:	job_purge_folder($individual_job['obj_id_a']);
+			break;
 			}
 		
 		// Re-schedule the job, if necessary

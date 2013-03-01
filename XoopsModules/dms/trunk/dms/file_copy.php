@@ -26,15 +26,19 @@
 
 // file_copy.php
 
-include '../../mainfile.php';
+include_once '../../mainfile.php';
 include_once 'inc_dms_functions.php';
 include_once 'inc_dest_path_and_file.php';
 include_once 'inc_file_copy.php';
 include_once 'inc_lifecycle_functions.php';
 
+// Include the select object system.
+//include_once 'inc_obj_select.php';
+
+
 if (dms_get_var("hdn_file_copy") == "confirm")
 	{
-	$dest_obj_owner = dms_get_var("rad_folder_id");
+	$dest_obj_owner = dms_get_var("rad_selected_obj_id");
 	
 	$obj_id = dms_get_var("hdn_obj_id");
 
@@ -75,26 +79,29 @@ else
 	$perms_level = dms_perms_level($obj_id);
 	
 	if ( ($perms_level != 3) && ($perms_level != 4) )
-	{
-	print("<SCRIPT LANGUAGE='Javascript'>\r");
-	print("location='index.php';");
-	print("</SCRIPT>");  
-	end();
-	}
+		{
+		print("<SCRIPT LANGUAGE='Javascript'>\r");
+		print("location='index.php';");
+		print("</SCRIPT>");  
+		end();
+		}
 	
 	$location = "file_copy.php";
 		
-	include XOOPS_ROOT_PATH.'/header.php';
-	
+	include 'inc_pal_header.php';
+	include_once 'inc_obj_select.php';
+
 	// Get file information
 	$query  = "SELECT obj_name from ".$dmsdb->prefix("dms_objects")." ";
 	$query .= "WHERE obj_id='".$obj_id."'";  
 	$doc_name = $dmsdb->query($query,'obj_name');
 	
+	print "  <form method='post' name='frm_select_obj' action='file_copy.php'>\r";
 	print "  <table width='100%'>\r";
-	print "  <form method='post' name='frm_select_dest' action='file_copy.php'>\r";
-	display_dms_header(2);
-	
+
+	//display_dms_header(2);
+	dms_display_header(2,"","",FALSE);
+
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
 	print "  <tr><td colspan='2' align='left'><b>Copy Document:</b></td></tr>\r";
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
@@ -107,22 +114,22 @@ else
 	print "  <tr>\r";
 	print "    <td colspan='2' align='left'>\r";
 	
-	include "inc_folder_select.php";
+	dms_select_object_id(SELECT_FOLDER,$obj_id);
 	
 	print "    </td>\r";
 	print "  </tr>\r";
 	
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
 	
-	print "  <td colspan='2' align='left'><input type=button name='btn_submit' value='Copy' onclick='check_for_dest();'>";
+	print "  <td colspan='2' align='left'><input type=button name='btn_submit' value='Copy' onclick='obj_select_check_for_dest();'>";
 	print "                               <input type=button name='btn_cancel' value='Cancel' onclick='location=\"file_options.php?obj_id=".$obj_id."\";'></td>\r";
 	print "</table>\r";
 	print "<input type='hidden' name='hdn_file_copy' value='confirm'>\r";
 	print "<input type='hidden' name='hdn_obj_id' value='".$obj_id."'>\r";
 	print "<input type='hidden' name='hdn_destination_folder_id' value=''>\r";
 	print "</form>\r";
-	
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+
+	include_once 'inc_pal_footer.php';
 	}
 ?>
 

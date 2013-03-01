@@ -28,7 +28,7 @@
 // mms_create.php
 
 include '../../mainfile.php';
-include_once 'defines.php';
+//include_once 'defines.php';
 include_once 'inc_dms_functions.php';
 include_once 'inc_dest_path_and_file.php';
 include_once 'inc_file_properties.php';
@@ -270,7 +270,8 @@ else
 	
 	print "  <table width='100%'>\r";
 	print "  <form method='post' name='frm_mms_create' action='mms_create_3.php' enctype='multipart/form-data'>\r";
-	display_dms_header(2);
+	//display_dms_header(2);
+	dms_display_header(2,"","",FALSE);
 	
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
 	
@@ -282,7 +283,7 @@ else
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
 	
 	print "  <tr>\r";
-	print "    <td colspan='2' align='left' class='".$dms_config['class_content']."'>\r";  
+	print "    <td colspan='2' align='left' ".$dms_config['class_content'].">\r";  
 	dms_display_spaces(3);
 	print "      Name:  ".$dms_var_cache['mms_create_obj_name'];
 	print "    </td>\r";

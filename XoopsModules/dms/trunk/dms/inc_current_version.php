@@ -1,3 +1,3 @@
 <?php
-$dms_current_version = 1.91;
+$dms_current_version = 1.95;
 ?>

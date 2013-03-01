@@ -40,8 +40,9 @@ if (dms_get_var("txt_folder_name") != FALSE)
 	}
 else
 	{
-	include XOOPS_ROOT_PATH.'/header.php';
-
+	//include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
+	
 	// Get active folder
 	$active_folder = dms_active_folder();
 
@@ -59,7 +60,8 @@ else
 	print "<form name='frm_folder_new' method='post' action='folder_new.php'>\r";
 	print "<table width='100%'>\r";
 
-	display_dms_header();
+	//display_dms_header();
+	dms_display_header(2,"","",FALSE);
 
 	print "  <tr><td colspan='2' align='left'><BR></td></tr>\r";
 	print "  <tr><td colspan='2' align='left'><b>" . _DMS_CREATE_FOLDER . "</b></td></tr>\r";
@@ -81,7 +83,8 @@ else
 	print("  document.frm_folder_new.txt_folder_name.focus();");
 	print("</SCRIPT>");
 	
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	//include_once XOOPS_ROOT_PATH.'/footer.php';
+	include 'inc_pal_footer.php';
 	}
 
 ?>

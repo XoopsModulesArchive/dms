@@ -57,7 +57,8 @@ function count_objects($obj_id)
 	 
 	// Get the objects in the specified folder.
 	$query  = "SELECT * FROM ".$dmsdb->prefix("dms_objects")." ";
-	$query .= "WHERE obj_owner='".$obj_id."' AND (obj_type='0' OR obj_type = '1')";
+	$query .= "WHERE obj_owner='".$obj_id."' AND (obj_type='0' OR obj_type = '1') ";
+	$query .= "AND obj_status='0' ";
 	//$query .= "ORDER BY obj_type";
 	
 	//  $result = mysql_query($query) or die(mysql_error());

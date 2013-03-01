@@ -32,7 +32,11 @@ include '../../mainfile.php';
 include_once 'inc_current_version.php';
 include_once 'inc_dms_functions.php';
 
-include XOOPS_ROOT_PATH.'/header.php';
+include 'inc_pal_header.php';
+
+//include XOOPS_ROOT_PATH.'/header.php';
+
+//include_once 'inc_dynamic_menus.php';
 
 // Main interface functions
 
@@ -54,206 +58,6 @@ function display_db_version_diff()
 		}
 	
 	print "</td></tr>\r";
-	}
-
-function display_main_interface_options()
-	{
-	global $active_folder_type, $active_folder, $active_folder_perms, $dms_admin_flag, $template_root_folder, $dms_config;
-
-	print "  <tr><td colspan='3'><BR></td></tr>\r";
-	print "  <tr>\r";
-	//print "    <td width='60%'><img src='images/help.gif' title='Help'><BR></td>\r";
-	print "    <td width='40%' style='text-align: left;'>";
-	dms_help_system("index",3);
-	print "    </td>\r";
-	
-	if( ( ($active_folder_type == FOLDER) 
-	&& ( ( ($active_folder!=0) && ( ($active_folder_perms == EDIT) || ($active_folder_perms == OWNER) ) ) ) 
-	&& ($active_folder_type != DISKDIR) )
-	|| ( ($active_folder == 0) && ($dms_admin_flag == 1) )
-	)
-		{
-		print "  <td width='35%' align='right' valign='top'>";
-	
-		if ($template_root_folder != 0)
-			print "    <a href='file_new.php'><img src='images/menu/filenew.gif' title='Create Document'></a>&nbsp;&nbsp;";
-	
-		print "    <a href='file_import.php'><img src='images/menu/fileimport.gif' title='Import Document'></a>&nbsp;&nbsp;";
-
-		if ($dms_config['OS'] == "Linux") 
-			{
-			print "    <a href='file_batch_import.php' title='Import Multiple Documents'><img src='images/menu/batch_import.gif'></a>&nbsp;&nbsp;";
-			}
-
-		print "    <a href='url_add.php'><img src='images/menu/www.gif' title='Add Web Page'></a>&nbsp;&nbsp;";
-		print "    <a href='folder_new.php'><img src='images/menu/foldernew.gif' title='Create Folder'></a>";
-		print "  </td>\r";
-		}
-	else
-		{
-		print "    <td width='25%' align='left'><BR></td>";
-		}
-
-	if ($dms_config['full_text_search'] == '1')
-		{
-		print "    <td width='25%' align='right' valign='top'><a href='#' onmouseover='grabMouseX(event); moveLayerY(\"div_menu_search\", currentY, event); popUpSearchMenu();'><img src='images/menu/filefind.gif' title='Search'></a>&nbsp;&nbsp;";
-		}
-	else 
-		{
-		print "    <td width='25%' align='right' valign='top'><a href='search_prop.php'><img src='images/menu/filefind.gif' title ='Search'></a>&nbsp;&nbsp;";
-		}
-	
-	if ($dms_admin_flag == 1) 
-		{
-		print "<a href='#' onmouseover='grabMouseX(event); moveLayerY(\"div_menu_admin\", currentY, event); popUpAdminMenu();'><img src='images/menu/configure.gif'></a";
-		}
-	
-	print "      </td></tr>\r";
-	
-	print "    <tr><td></td></tr>\r";
-	//print "  <tr><td colspan='3' align='left'><a href='folder_close_all.php'>" . _DMS_CLOSE_ALL_FOLDERS  . "</a></td></tr>\r";
-	}
-
-function dms_admin_menu()
-	{
-	global $dms_config;
-
-	print "<div id='div_menu_admin' style='position: absolute; visibility: hidden; z-index:1000;'>\r";
-
-	print "<table ".$dms_config['class_narrow_header']." width='120' cellspacing='1' style='width: 12em;'>\r";
-
-	print "<th nowrap='nowrap' align='center'>Administration</th>\r";
-
-	print "<tr><td align='center' ".$dms_config['class_narrow_content']." nowrap='nowrap'>\r";
-
-	print "<a href='audit_log_select_user.php'>Auditing</a><BR>";
-	print "<a href='group_editor.php'>Group Editor</a><BR>";
-	print "<a href='job_server_manager.php'>Job Server</a><BR>";
-	print "<a href='lifecycle_manager.php'>Lifecycles</a><BR>";
-	print "<a href='perms_manager.php'>Permissions Groups</a><BR>";
-	print "<a href='statistics.php'>Statistics</a><BR>";
-	print "<BR>";
-	print "<a href='config_main.php'>Configuration</a><BR>";
-	
-	print "<BR><a href='#' onmouseover='shutdown();'>[Close]</a>\r";
-	
-	print "</td></tr>\r";
-
-	/*
-	print "<tr><td style='margin-top: 5px; font-size: smaller; text-align: right;'>\r";
-	print "<a href='#' onmouseover='shutdown();'>[Close]</a>\r";
-	print "</td></tr>\r";
-*/
-	print "</table>\r";
-
-	print "</div>\r";
-	}
-
-	
-function dms_search_menu()
-	{
-	global $dms_config;
-
-	print "<div id='div_menu_search' style='position: absolute; visibility: hidden; z-index:1000;'>\r";
-
-	print "<table ".$dms_config['class_narrow_header']." width='120' cellspacing='1' style='width: 12em;'>\r";
-
-	print "<th nowrap='nowrap' align='center'>Search</th>\r";
-
-	print "<tr><td align='center' ".$dms_config['class_narrow_content']." nowrap='nowrap'>\r";
-
-	print "<a href='search_ft.php'>Full Text</a><BR>";
-	print "<a href='search_prop.php'>Properties</a><BR>";
-
-	
-	print "<BR>";
-	print "<a href='#' onmouseover='shutdown();'>[Close]</a>\r";
-	
-	print "</td></tr>\r";
-/*
-	print "<tr><td style='margin-top: 5px; font-size: smaller; text-align: right;'>\r";
-	print "<a href='#' onmouseover='shutdown();'>[Close]</a>\r";
-	print "</td></tr>\r";
-*/
-	print "</table>\r";
-
-	print "</div>\r";
-	}
-
-	
-function dms_dhtml_menu_functions()
-	{
-	global $dms_config;
-
-	print "<script type='text/javascript'>\r";
-	print "<!--\r";
-	print "var thresholdY = 15; // in pixels; threshold for vertical repositioning of layer\r";
-	print "var ordinata_margin = 20; // to start the layer a bit above the mouse vertical coordinate\r";
-	print "// -->\r";
-	print "</script>\r";
-
-	print "<script type='text/javascript' src='".XOOPS_URL."/modules/dms/layersmenu.js'></script>\r";
-
-	print "<script language='JavaScript'>\r";
-	print "<!--\r";
-	print "currentX = -1;\r";
-	print "function grabMouseX(e) {\r";
-	print "  if ((DOM && !IE4) || Opera5) {\r";
-	print "    currentX = e.clientX;\r";
-	print "    } else if (NS4) {\r";
-	print "    currentX = e.pageX;\r";
-	print "    } else {\r";
-	print "    currentX = event.x;\r";
-	print "    }\r";
-	
-	print "currentX = currentX - 120;\r";
-	/*
-	print "  if (DOM && !IE4 && !Opera5 && !Konqueror) {\r";
-	print "    currentX += window.pageXoffset;\r";
-	print "      } else if (IE4 && DOM && !Opera5 && !Konqueror) {\r";
-	print "      currentX += document.body.scrollLeft;\r";
-	print "    }\r";
-	*/
-	print "  }\r";
-
-
-	print "function popUpAdminMenu() {\r";
-	print "shutdown();\r";
-	print "setleft(\"div_menu_admin\",currentX);\r";
-	print "popUp(\"div_menu_admin\",true);\r";
-	print "}\r";
-
-	print "function popUpSearchMenu() {\r";
-	print "shutdown();\r";
-	print "setleft(\"div_menu_search\",currentX);\r";
-	print "popUp(\"div_menu_search\",true);\r";
-	print "}\r";
-	
-	print "function moveLayers() {\r";
-	print "grabMouseX;\r";
-	print "setleft(\"div_menu_admin\",currentX);\r";
-	print "settop(\"div_menu_admin\",currentY);\r";
-	
-	print "setleft(\"div_menu_search\",currentX);\r";
-	print "settop(\"div_menu_search\",currentY);\r";
-	
-	print "}\r";
-
-	print "function shutdown() {\r";
-	print "popUp(\"div_menu_admin\",false);\r";
-	print "popUp(\"div_menu_search\",false);\r";
-	print "}\r";
-
-	print "if (NS4) {\r";
-	print "document.onmousedown = function() { shutdown(); }\r";
-	print "} else {\r";
-	print "document.onclick = function() { shutdown(); }\r";
-	print "}\r";
-
-	print "moveLayers();\r";
-	print "loaded = 1;\r";
-	print "// -->\r";
-	print "</script>\r";
 	}
 	
 define('SEPARATOR_LIMIT',3);
@@ -340,7 +144,7 @@ function list_disk_dir($obj_id, $interface_type = "MULTIPLE")
 		
 		print "<tr>\r";
 		
-		print "    <td ".$class." align='left' colspan='2'>".$level_offset."<a title='File'><img src='images/file.png'></a>&nbsp;&nbsp;&nbsp;\r";
+		print "    <td ".$class." align='left' colspan='3'>".$level_offset."<a title='File'><img src='images/file.png'></a>&nbsp;&nbsp;&nbsp;\r";
 		print "<a title='Click to import.' href='file_dir_import.php?obj_id=".$obj_id."&obj_num=".$counter."'>".$file_list[$counter]."</a>\r";
 		print "    </td>\r";
 		
@@ -387,6 +191,8 @@ if($new_active_folder != FALSE)
 		// Set the folder as active
 		$query = "INSERT INTO ".$xoopsDB->prefix("dms_active_folder")." (user_id,folder_id) VALUES ('".$dms_user_id."','".$new_active_folder."')";
 		$dmsdb->query($query);
+
+		$active_folder = $new_active_folder;
 		}
 	}
 
@@ -409,8 +215,8 @@ if($dms_disp_flag == "TRUE")
 	dms_show_mb();
 	}
 	
-include_once XOOPS_ROOT_PATH.'/footer.php';
-
+//include_once XOOPS_ROOT_PATH.'/footer.php';
+include_once 'inc_pal_footer.php';
 /*
   foreach ($GLOBALS as $key=>$value)
     {

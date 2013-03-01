@@ -1,6 +1,6 @@
 <!DOCTYPE webproject>
 <webproject>
-  <project usePreviewPrefix="0" previewPrefix="" type="Local" name="dms" encoding="utf8" >
+  <project usePreviewPrefix="0" type="Local" previewPrefix="" name="dms" encoding="utf8" >
     <upload/>
     <defaultDTD>-//w3c//dtd html 4.01 transitional//en</defaultDTD>
     <item url="admin/" uploadstatus="1" />
@@ -93,7 +93,6 @@
     <item url="inc_file_select.php" uploadstatus="1" />
     <item url="inc_folder_select.php" uploadstatus="1" />
     <item url="inc_lifecycle_functions.php" uploadstatus="1" />
-    <item url="inc_main_ui_1.php" uploadstatus="1" />
     <item url="inc_main_ui_2.php" uploadstatus="1" />
     <item url="inc_pal.php" uploadstatus="1" />
     <item url="inc_pal_xoops.php" uploadstatus="1" />
@@ -159,11 +158,9 @@
     <item url="folder_archive.php" uploadstatus="1" />
     <item url="perms_manager.php" uploadstatus="1" />
     <item url="perms_editor.php" uploadstatus="1" />
-    <item url="inc_main_ui_3.php" uploadstatus="1" />
     <item url="folder_copy.php" uploadstatus="1" />
     <item url="link_move.php" uploadstatus="1" />
     <item url="job_server.php" uploadstatus="1" />
-    <item url="job_server_db.php" uploadstatus="1" />
     <item url="config_write_js_config.php" uploadstatus="1" />
     <item url="job_server_manager.php" uploadstatus="1" />
     <item url="inc_job_server_functions.php" uploadstatus="1" />
@@ -175,9 +172,16 @@
     <item url="obj_delete.php" uploadstatus="1" />
     <item url="file_recall.php" uploadstatus="1" />
     <item url="file_batch_import.php" uploadstatus="1" />
-    <item url="object_restore.php" />
     <treestatus>
       <openfolder url="admin" />
     </treestatus>
+    <annotations/>
+    <item url="folder_link_options.php" uploadstatus="1" />
+    <item url="link_create.php" uploadstatus="1" />
+    <item url="folder_copy_by_id.php" uploadstatus="1" />
+    <item url="inc_main_ui_4.php" uploadstatus="1" />
+    <item url="obj_select.php" uploadstatus="1" />
+    <item url="inc_obj_select.php" uploadstatus="1" />
+    <item url="obj_email.php" />
   </project>
 </webproject>

@@ -38,13 +38,13 @@ $query = 'SELECT data FROM '.$dmsdb->prefix("dms_config")." WHERE name='doc_path
 $doc_path = $dmsdb->query($query,'data');
 
 // Create _binfilter.sh
-$file = $doc_path."/_binfilter.sh";
-$fp = fopen($file,'w') or die("<BR><BR>Unable to open $file");
+//$file = $doc_path."/_binfilter.sh";
+//$fp = fopen($file,'w') or die("<BR><BR>Unable to open $file");
 
-fputs($fp,"strings \"\$1\" - 2>/dev/null\n");
-fclose($fp);
+//fputs($fp,"strings \"\$1\" - 2>/dev/null\n");
+//fclose($fp);
 
-chmod($file,0755);
+//chmod($file,0755);
 
 // Create swish-e.conf
 $file = $doc_path."/swish-e.conf";
@@ -54,11 +54,17 @@ $line = "IndexDir ".$doc_path."/\n";
 fputs($fp,$line);
 $line = "IndexFile ".$doc_path."/index.swish-e\n";
 fputs($fp,$line);
-$line = "TruncateDocSize 100000\n";
-fputs($fp,$line);
+//$line = "TruncateDocSize 100000\n";
+//fputs($fp,$line);
 $line = "IndexReport 1\n";
 fputs($fp,$line);
-$line = "FileFilter .dat \"".$doc_path."/_binfilter.sh\" \"'%p'\"\n";
+$line = "IndexContents TXT* .dat\n";
+fputs($fp,$line);
+//$line = "FileFilter .dat \"".$doc_path."/_binfilter.sh\" \"'%p'\"\n";
+//fputs($fp,$line);
+$line = "IndexOnly .dat\n";
+fputs($fp,$line);
+$line = "MinWordLimit 3\n";
 fputs($fp,$line);
 
 fclose($fp);

@@ -40,29 +40,17 @@ if (dms_get_var("txt_url_name") != FALSE)
 	$obj_name = dms_strprep($obj_name);
 	$obj_owner = dms_get_var("hdn_active_folder");
 	
-	$query  = "INSERT INTO ".$dmsdb->prefix("dms_objects")." (obj_type,obj_name,obj_owner) VALUES (";
+	$query  = "INSERT INTO ".$dmsdb->prefix("dms_objects")." (obj_type,obj_name,obj_owner,time_stamp_create) VALUES (";
 	$query .= "'".WEBPAGE."',";
 	$query .= "'".$obj_name."',";
-	$query .= "'".$obj_owner."')";
+	$query .= "'".$obj_owner."',";
+	$query .= "'".time()."')";
 	$dmsdb->query($query);
 
 	// Get the obj_id of the new object
 	$obj_id = $dmsdb->getid();
 
-	/*
-	// Store the owner permissions in dms_object_perms  TEMP CODE
-	$query  = "INSERT INTO ".$dmsdb->prefix('dms_object_perms')." ";
-	$query .= "(ptr_obj_id,user_id, group_id, user_perms, group_perms, everyone_perms) VALUES ('";
-	$query .= $obj_id."','";
-	$query .= $dms_user_id."','";
-	$query .= "0','";
-	$query .= "4','";
-	$query .= "0','";
-	$query .= "0')";
-	$dmsdb->query($query);
-	*/
 	dms_perms_set_init($obj_id,$obj_owner);
-	
 	
 	// Store URL in dms_object_misc
 	$query  = "INSERT INTO ".$dmsdb->prefix('dms_object_misc')." ";
@@ -89,8 +77,9 @@ if (dms_get_var("txt_url_name") != FALSE)
 	}
 else
 {
-	include XOOPS_ROOT_PATH.'/header.php';
-
+	//include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
+	
 	// Get active folder
 	$active_folder = dms_active_folder();
 
@@ -108,7 +97,8 @@ else
 	print "<form name='frm_url_add' method='post' action='url_add.php'>\r";
 	print "<table width='100%'>\r";
 
-	display_dms_header();
+	//display_dms_header();
+	dms_display_header(2,"","",FALSE);
 
 	print "  <tr><td colspan='2' align='left'><BR></td></tr>\r";
 	print "  <tr><td colspan='2' align='left'><b>Add Web Page:</b></td></tr>\r";
@@ -136,7 +126,8 @@ else
 	print("  document.frm_url_add.txt_url_name.focus();");
 	print("</SCRIPT>");
 	
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	include 'inc_pal_footer.php';
+	//include_once XOOPS_ROOT_PATH.'/footer.php';
 }
 
 ?>

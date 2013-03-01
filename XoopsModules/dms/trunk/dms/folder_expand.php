@@ -27,17 +27,10 @@
 // folder_expand.php
 
 include '../../mainfile.php';
-//include XOOPS_ROOT_PATH.'/header.php';
 include_once 'inc_dms_functions.php';
 
 $location = dms_get_var("ret_location");
 if($location == FALSE) $location = "index.php";
-
-//if ($HTTP_GET_VARS["ret_location"]) $location=$HTTP_GET_VARS["ret_location"];
-//else $location="index.php";
-
-//if ($HTTP_GET_VARS["obj_id"]) $location .= "?obj_id=".$HTTP_GET_VARS["obj_id"];
-//else $location="index.php";
 
 $test = dms_get_var("obj_id");
 if ($test != FALSE) $location .= "?obj_id=".$test;
@@ -45,16 +38,9 @@ else $location = "index.php";
 
 // Reset the location if the obj_id is flagged as being bad.
 if(dms_get_var("obj_id") == "-1") $location = dms_get_var("ret_location");
-//if ($HTTP_GET_VARS["obj_id"] == "-1") $location = $HTTP_GET_VARS["ret_location"];
-
-//if ($HTTP_GET_VARS["active"] == "FALSE") $change_active_folder = "FALSE";
-//else $change_active_folder = "TRUE";
 
 $change_active_folder = "TRUE";
 if(dms_get_var("active") == "FALSE") $change_active_folder = "FALSE";
-
-
-//if ($HTTP_GET_VARS["folder_id"])
 
 $folder_id = dms_get_var("folder_id");
 if($folder_id != FALSE)
@@ -87,8 +73,12 @@ if($folder_id != FALSE)
 else
 	{
 	print "Error:  Please contact your system administrator.";
+	exit(0);
 	}
 
+$dms_var_cache['doc_alpha_sort'] = "ALL";
+dms_var_cache_save();
+	
 //header("Location:".$location);
 dms_header_redirect($location);
     

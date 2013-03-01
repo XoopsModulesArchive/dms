@@ -115,7 +115,7 @@ if(dms_get_var('hdn_temp_file_name') != FALSE)
 		
 			// Before anything else is done, get the type and size of the file
 			$file_type = ""; //mime_content_type($source_path_and_file);
-			if($dms_config['os']=="Linux") $file_type = trim(exec('file -bi '. escapeshellarg($source_path_and_file)));
+			if($dms_config['OS']=="Linux") $file_type = trim(exec('file -bi '. escapeshellarg($source_path_and_file)));
 			
 			$file_size = filesize($source_path_and_file);
 			
@@ -229,7 +229,8 @@ if(dms_get_var('hdn_temp_file_name') != FALSE)
 	}
 else
 	{
-	include XOOPS_ROOT_PATH.'/header.php';
+	//include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
 	
 	print "<script language='JavaScript'>\r";
 	//print "<!--\r";
@@ -273,7 +274,8 @@ else
 	print "<form name='frm_file_import' method='post' action='file_batch_import.php' enctype='multipart/form-data'>\r";
 	print "<table width='100%'>\r";
 	
-	display_dms_header();
+	dms_display_header(2,"","",FALSE);
+	//display_dms_header();
 	print "  <tr><td colspan='2' align='left'><BR></td></tr>\r";
 	print "  <tr><td colspan='2' align='left'><b>Import Multiple Documents:</b></td></tr>\r";
 	print "  <tr><td colspan='2' align='left'><BR></td></tr>\r";
@@ -296,6 +298,7 @@ else
 	print("  document.frm_file_import.txt_file_name.focus();");
 	print("</SCRIPT>");  
 	
-	include_once XOOPS_ROOT_PATH.'/footer.php';
-  }
+	//include_once XOOPS_ROOT_PATH.'/footer.php';
+	include 'inc_pal_footer.php';
+}
 ?>

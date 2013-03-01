@@ -94,6 +94,7 @@ if ($_POST["hdn_install_module"])
 		{
 		case "application/octet-stream":		$file_type="bzip2";		break;
 		case "application/x-bzip":			$file_type="bzip2";		break;
+		case "application/x-bzip2":			$file_type="bzip2";		break;
 		case "application/x-tbz":			$file_type="bzip2";		break;
 		case "application/zip":				$file_type="zip";		break;
 		default:

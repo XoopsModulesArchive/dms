@@ -49,11 +49,11 @@ $temp_file_name = "tfn".(string) time().(string) ($magic_number + $dms_user_id);
 		switch($error_code)
 			{
 			case UPLOAD_ERR_INI_SIZE:
-				$error_message = "The document is too large to upload.  (UPLOAD_ERR_INI_SIZE)";
+				$error_message = "The document is too large to upload.  (UPLOAD_ERR_INI_SIZE) (MFS:".$upload_max_filesize.")";
 				break;
 			
 			case UPLOAD_ERR_FORM_SIZE:
-				$error_message = "The document is too large to upload.  (UPLOAD_ERR_FORM_SIZE)";
+				$error_message = "The document is too large to upload.  (UPLOAD_ERR_FORM_SIZE) (MFS:".$upload_max_filesize.")";
 				break;
 			
 			case UPLOAD_ERR_PARTIAL:

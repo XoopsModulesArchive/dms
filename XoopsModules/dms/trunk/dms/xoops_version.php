@@ -25,7 +25,7 @@
 //  ------------------------------------------------------------------------ //
 
 $modversion['name'] = "Document Management System";
-$modversion['version'] = 1.91;
+$modversion['version'] = 1.95;
 $modversion['description'] = "Document Management System";
 $modversion['credits'] = "";
 $modversion['author'] = "Brian E. Reifsnyder";
@@ -80,3 +80,8 @@ $modversion['blocks'][1]['file'] = "dms_block_doc_history.php";
 $modversion['blocks'][1]['name'] = "Document History";
 $modversion['blocks'][1]['show_func'] = "dms_show_history";
 $modversion['blocks'][1]['template'] = "dms_block_history.html";
+
+$modversion['blocks'][2]['file'] = "dms_block_main_int_options.php";
+$modversion['blocks'][2]['name'] = "Main DMS Options";
+$modversion['blocks'][2]['show_func'] = "dms_main_int_options_block";
+$modversion['blocks'][2]['template'] = "dms_block_main_int_options.html";

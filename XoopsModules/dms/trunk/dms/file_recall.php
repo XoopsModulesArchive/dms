@@ -70,7 +70,7 @@ if (dms_get_var("hdn_file_recall") == "confirm")
 	}
 else
 	{
-	include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
 	
 //	if ($HTTP_POST_VARS["hdn_obj_id"]) $obj_id = $HTTP_POST_VARS['hdn_obj_id'];
 //	else $obj_id = $HTTP_GET_VARS['obj_id'];
@@ -149,7 +149,7 @@ else
 	print "<input type='hidden' name='hdn_obj_id' value='".$obj_id."'>\r";
 	print "</form>\r";
 	
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	include_once 'inc_pal_footer.php';
 	}
 ?>
 

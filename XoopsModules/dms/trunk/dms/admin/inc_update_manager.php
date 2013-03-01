@@ -57,6 +57,10 @@ function dms_update_tables($old_version,$current_version)
 		if ($old_version==1.88) dms_update_0188();
 		if ($old_version==1.89) dms_update_0189();
 		if ($old_version==1.90) dms_update_0190();
+		if ($old_version==1.91) dms_update_0191();
+		if ($old_version==1.92) dms_update_0192();
+		if ($old_version==1.93) dms_update_0193();
+		if ($old_version==1.94) dms_update_0194();
 		$old_version = dms_get_old_version();
 		}
 	return;
@@ -808,4 +812,65 @@ function dms_update_0190()
 	
 	$dms_config['write_job_server_config'] = 0;
 	}
+	
+function dms_update_0191()
+	{
+	global $dmsdb;
+
+	$query  = "UPDATE ".$dmsdb->prefix("dms_config")." ";
+	$query .= "SET data='1.92' WHERE name='version'";
+	$dmsdb->query($query);
+	
+	$query  = "ALTER TABLE ".$dmsdb->prefix("dms_objects")." ";
+	$query .= "ADD COLUMN num_views smallint(8) NOT NULL default '0' AFTER file_type";
+	$dmsdb->query($query);
+	
+	$query  = "INSERT INTO ".$dmsdb->prefix("dms_config")." ";
+	$query .= "VALUES ('doc_expiration_enable','0')";
+	$dmsdb->query($query);
+	}
+
+function dms_update_0192()
+	{
+	global $dmsdb;
+
+	$query  = "UPDATE ".$dmsdb->prefix("dms_config")." ";
+	$query .= "SET data='1.93' WHERE name='version'";
+	$dmsdb->query($query);
+	}
+
+function dms_update_0193()
+	{
+	global $dmsdb;
+
+	$query  = "UPDATE ".$dmsdb->prefix("dms_config")." ";
+	$query .= "SET data='1.94' WHERE name='version'";
+	$dmsdb->query($query);
+	}
+
+function dms_update_0194()
+	{
+	global $dmsdb;
+
+	$query  = "UPDATE ".$dmsdb->prefix("dms_config")." ";
+	$query .= "SET data='1.95' WHERE name='version'";
+	$dmsdb->query($query);
+
+	$query  = "INSERT INTO ".$dmsdb->prefix("dms_config")." ";
+	$query .= "VALUES ('search_summary_flag','1')";
+	$dmsdb->query($query);
+
+	$query  = "INSERT INTO ".$dmsdb->prefix("dms_config")." ";
+	$query .= "VALUES ('search_summary_c_before','100')";
+	$dmsdb->query($query);
+
+	$query  = "INSERT INTO ".$dmsdb->prefix("dms_config")." ";
+	$query .= "VALUES ('search_summary_c_after','300')";
+	$dmsdb->query($query);
+
+	$query  = "INSERT INTO ".$dmsdb->prefix("dms_config")." ";
+	$query .= "VALUES ('search_results_per_page','10')";
+	$dmsdb->query($query);
+	}
+
 ?>

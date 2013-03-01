@@ -55,6 +55,7 @@ function dms_adn_system($obj_id)
 	$path_and_file = $dms_config['doc_path']."/".$file_path;
 	
 	// Determine the string to search for in the file.
+/*
 	$search_string_len = strlen($dms_config['adn_mask']);
 	
 	$search_string[0] = "\x00";
@@ -69,7 +70,9 @@ function dms_adn_system($obj_id)
 	$search_string_len += 3;
 	
 	$search_string = implode("",$search_string);
-	
+*/
+$search_string = $dms_config['adn_mask'];                 //////////////////////////////////////////////////////////////!!!!!!!!!!!!!!
+
 //print "<br>ss:  !".$search_string."!";
 //print "<br>ssl:  ".$search_string_len;
 
@@ -106,12 +109,15 @@ function dms_adn_system($obj_id)
 //print "<BR>Offset:  ".$offset;
 		if(!feof($handle)) 
 			{
-			$str_position = strpos($data,$search_string);
+			//$str_position = strpos($data,$search_string);    Old PHP native function to find mask.
+			$str_position = dms_pattern_pos($data,$search_string,$dms_config['adn_mask_char'][0]);
+
 			if($str_position > 0 && $str_position < 750)
 				{
 				//  The document number has been found
 //print "<BR>Mask Offset:  ".($offset + $str_position +2);
-				fseek($handle,($offset + $str_position + 2) );
+				//fseek($handle,($offset + $str_position + 2) ); // Used when expecting 00 00 before the mask.
+				fseek($handle,($offset + $str_position) );
 				fwrite($handle,$document_number,strlen($dms_config['adn_mask']));
 //print "<BR>Write Document Number";
 				}
@@ -135,4 +141,38 @@ function dms_adn_system($obj_id)
 		}
 //print "<BR>END";
 //exit(0);
+	}
+
+function dms_pattern_pos($data,$search_pattern,$wild_card)
+	{
+	//  Two stage pattern matching function
+	//  This function searches for the $search_pattern in the $data.  The $wild_card is a character in the search pattern
+	//  that is ignored.  For example dms_pattern_pos($data,"dms-000-000-000-000","0" will search for dms-???-???-???-??? and
+	//  return the starting position of the pattern, if found.  The $wild_card is also the mask character.
+	//  If no pattern is found, FALSE is returned.
+	$beginning_search_character = $search_pattern[0];
+	$match_counter = 0;
+
+	for($index = 0; $index <= strlen($data); $index++)
+		{
+		$match_counter = 1;
+		if($data[$index] == $beginning_search_character)
+			{
+			// The beginning character has been found.  Now verify that the rest of the characters match the search pattern.
+			$data_index = $index + 1;
+			for($pattern_index = 1; $pattern_index <= strlen($search_pattern); $pattern_index++)
+				{
+				if( ($search_pattern[$pattern_index] == $wild_card) 
+					|| ($data[$data_index] == $search_pattern[$pattern_index]) )
+						$match_counter ++;
+				else 
+					break;
+
+				$data_index++;
+				}
+			}
+
+		//  If the entire pattern matches, return the offset location.
+		if($match_counter == strlen($search_pattern)) return $index;
+		}
 	}
