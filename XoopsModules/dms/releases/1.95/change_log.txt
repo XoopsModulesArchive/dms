@@ -1,0 +1,573 @@
+Change Log:
+
+Future Release
+
+Note:  This "Future Release" list may change.
+
+To-Do:  *  Add support for pdftk.
+Added:  *  DMS now has it's own, separate list of groups.  The administrator can pick between using the Xoops Groups or using the DMS groups.
+
+Change: *  Eliminated the empty browser page that was displayed when a document is checked-out, viewed, etc.  (Is this possible?)
+
+To-Do:  *  Capability to set default group for setting user permissions
+To-Do   *  Folder Template System
+
+To-Do:  *  Make the admin view an individual preference
+To-Do:  *  MMS integration:  Sort by date created, newest to oldest.
+
+To-Do:  *  When a document is at the end of a lifecycle, the last stage name should be displayed in the options page.
+To-Do:  *  Ability to remove a document from a lifecycle.
+
+Added:  * Job to delete documents from a folder.
+
+Change: * On the folder_options screen, for administrators, the Options menu no longer is displayed under other items on the screen.
+
+Change: * Left-justify statistics page.
+
+Change:  *URL's are now alphabetically sorted with the documents when listed in the export file(s).
+
+
+***  FIX AUDITING FOR url_move.php
+Change: * When importing multiple documents only .zip files are allowed.
+Change: * When a document is copied, the destination document can inherit the permissions from the new parent folder.  This will only occur if the 
+          permissions inheritance is enabled.  If the permissions inheritance is not enabled, the original file permissions are now copied.  
+Change: * Fixed bug that prevented the button from appearing, on the Update Manager, that allows you to write the job server configuration.
+
+Change:*  Set proper permissions on Document Expiration system.
+Change: * Set url_options.php such that anyone can view the page.
+
+Removed: * folder_expand.php, folder_close_all.php, and folder_contract.php as these functions are now contained in their respective
+          php pages.
+
+Version 1.94
+Added:    dms_inc_functions_test() has been added to test the inclusion of inc_dms_functions.php when developing.
+Added:    dms_send_emai() can now be used to send an attachment that is not located in the repository.
+Added:    A job can now be scheduled to delete all documents in a folder.
+Added:    Documents can now be removed from a lifecycle.
+Added:    By setting a folder configuration flag, the document comments can now be displayed on the main screen.
+Added:    URL's can now be e-mailed.
+Change:   Disabled mime type determination via the "file" command, on Linux systems.
+Change:   The MMS integration no longer displays the standard header functions.  (i.e. Import Document, Create Folder, etc.)
+Change:   Fixed an issue where forcing a folder to display only worked on the second attempt to display the folder.
+Change:   Created an object select page (obj_select.php).  This page is to be used anywhere a folder or file is selected.
+Change:   folder_content_report.php no longer reports deleted file.
+Change:   The job server no longer publishes deleted files.
+Change:   The folder_content_report.php has been modified so that deleted files are no longer displayed.
+Removed:  With the exception of the main screen, the menu bar has been removed from all screens.
+
+Version 1.93
+Added:    Links can be created to documents and folders.  Note:  This feature is currently disabled.
+Added:    Folder copy system for administrators.
+Change:   Re-wrote most of the user interface code to ease maintainablilty.
+
+Version 1.92
+Added:    Created a block that contains all of the document/folder/url creation buttons.
+Added:    Administrators can globally change user ownership on documents.  For example, if a user leaves an organization, all documents
+          owned by that user can be transferred to another user.  Additionally, if selected, all other permissions for that user can
+          be deleted.
+Added:    Document expiration system.
+Added:    Properties search, for a document name, can now be initiated from a query string.  Use search_prop.php?search_name=<name>
+Added:    Full text search can now be initiated from a query string.  Use search_ft.php?search_query=<string>
+Added:    Document view counter has been added.  This is incremented only when a document is viewed.
+Added:    The maximum size, of an uploaded file, is now displayed in the error message if the document was too large to upload.
+Added:    A time stamp is now applied when adding links to other web pages.
+Added:    Groups can now be e-mailed documents.
+Added:    URL's can now be moved and copied.
+Added:    Auditing information can now be displayed for folders and sub-folders, in one report.
+Change:   User ID's are now resolved when displaying audit logs.
+Change:   The document/folder/url creation buttons are now displayed at the top of almost every page.
+Change:   Administrators can now move or copy any and all documents, regardless of their being in a lifecycle.
+Change:   Left justified the Lifecycle Name and Lifecycle Stage, in file_options.php under the Information section.
+Change:   Job server now sorts documents correctly by FILO, when publishing documents for external display.
+Change:   Alphabetical document sorting is now reset when a user changes folders.
+Change:   Misc. minor user interface changes.
+Change:   Removed _binfilter.sh requirement for full text search engine and modified the swish-e.conf file.
+Change:   Improved the viewing of documents that do not have extensions.
+Change:   Permissions propagation now works in PHP 5.
+Change:   The ADN system has been modified such that the mask character is ignored when searching for the mask to replace.
+
+Version 1.91
+Added:    Addition of the time_stamp_expire column, in dms_objects, for future support of document expiration.
+Change:   Document Owner is always displayed in the Information section of the file_options.php screen.
+Change:   Moved Alpha-filtering and paging to the top of the page, on the main screen.
+Change:   Added a button to the Update Manager that writes the job server configuration file.  This button only appears if the job server configuration
+          has been written previously with the job server configuration button on the configuration screen.
+Change:   Adjusted user interface column alignment.
+Change:   Fixed a bug that resulted in documents, created by an automatic lifecycle, not having an audit log.
+Change:   Miscellaneous minor bug fixes.
+Change:   Minor user interface improvements.
+Change:   Fixed a bug that allowed to copy or move documents into folders with browse permissions.
+Change:   Users cannot view the contents of a folder for which they have been granted "browse" permissions.  The "browse" permissions allows them to see
+          that the folder exists, they cannot view it's contents.  
+
+Version 1.90
+Added:    Documents that are created, by copying, due to an automatic lifecycle now have an audit log entry.
+Added:    A select box has been added for selecting a user or users to e-mail a document to.
+Added:    In order to enable OS-specific functions, it is now possible to set the server OS in the configuration.
+Added:    obj_restore.php replaces file_restore.php and folder_restore.php
+Change:   Folder permissions are now inherited.
+Change:   Enabled the batch upload feature...for the Linux OS only.
+Change:   Completed and enabled the document icon system.
+Change:   Long document names no longer are continued in the wrong columns.
+Change:   Jobs, in the Job Server Manager, are now arranged by name.
+Change:   Miscellaneous, minor, bug fixes.
+Removed:  Multiple directory user interface.
+Removed:  file_restore.php, folder_restore.php
+
+Version 1.89 
+Added:    Added external document retrieval capabilities to file_retrieve_extern.php for URL's.
+Added:    Routed documents can now be recalled.
+Added:    Documents can now be uploaded, on *nix systems, in batches if they are contained within a zip file.  (Disabled in this release.)
+Added:    Icons for different document types. (Incomplete)
+Change:   Changed the main menu items on the main user interface.
+Change:   Fixed a bug that allowed users to copy a document to a folder for which they only have browse permissions.
+Change:   Fixed a minor bug in the config_repo.php file that could result in the "white screen" in PHP 5.x.
+Change:   Permissions, for URL's can now be inherited from the parent folder.
+Change:   The obj_name is now saved in the audit log when an object is deleted.
+Change:   URL's are no longer added to the document history.
+Change:   On the file_import.php screen, the line for selecting the file to import is now first.
+Change:   Documents are now added to the document history when importing or creating a document.
+
+Version 1.88
+Added:    Support for storing URLs within the DMS.  (Copy/Move capabilities need to be added.)
+Added:    URL's are now exported from the job server.
+Change:   Fixed a bug that prevented a user from cancelling the check-out of a document.
+Change:   Implemented file deletion from a single php file:  obj_delete.php
+Removed:  file_delete.php, folder_delete.php, link_delete.php
+
+Version 1.87
+Added:    Improved error handling for document checkin/import.
+Change:   Import/Checkin/Checkout/View functions now working in PHP 5.x.
+
+Version 1.86
+Change:   Fixed a bug, created in version 1.85, whereby a user couldn't update the file properties or comments.
+Change:   Fixed a bug, created in version 1.85, that prevented the archiving of a folder.
+Change:   Fixed a bug, created in version 1.85, that prevented the copying of a document.
+Change:   Lifecycles, as displayed in the lifecycle manager, are now listed in alphabetical order.
+Change:   The job server information is now displayed left-justified.
+Change:   Documents can now be automatically copied when a document is promoted within a lifecycle.
+
+Version 1.85
+Added:    If the user is an administrator, a button to use the Update Manager, has been added to the version warning screen.
+Added:    Administrators can now set the number of documents displayed in the document history block.
+Added:    The document's path, in the DMS, is now displayed on the options screen.
+Added:    Added a "Relevance" column to the full text search screen.
+Change:   The default user interface is now set to 2, upon installation.
+Change:   Fixed bug in the folder options page that resulted in the "Synchronize File Names With Document Names" check box being erroneously checked. 
+Change:   The "Single Directory Beta" user interface now completely replaces the "Single Directory" user interface.
+Change:   The permissions groups are now ordered by name.
+Change:   In any list box containing user names, the group drop-down box has been eliminated and all user names are now displayed.
+Change:   Certain configurations are now locked after the first document has been stored in the system.  This is done to help preserve the integrity
+          of the document repository by making it difficult to change document repository and operating system configurations.
+Change:   With the exception of document creation and importation, DMS now works in PHP 5.x.  This will be fixed in version 1.86.
+Change:   The "\" is now accepted in the repository path.
+Change:   Addressed many PHP warnings.
+Removed:  The permissions caching system has been removed.  This is no longer required due to the optimized SQL query in the new "Single Directory" 
+          user interface.
+
+Version 1.84
+Added:    Jobs can now have a user-defined name.
+Added:    Job to publish a text file that provides the name and object id's of the newest 10 documents that are in a defined folder.
+Added:    Documents can be accessed externally, without logging into Xoops, if they have everyone permissions set to Read-Only or greater.  This is 
+          accomplished by calling the following PHP script:  file_retrieve_extern.php?obj_id=<obj_id>  This feature has been added in order to provide
+          loose integration between the DMS module and other systems.  Due to security concerns, this feature must be enabled in the configuration.
+Added:    Capability to specify the folder to open from the URL on the main screen.  This is accomplished by calling:  index.php?folder_id=<obj_id>
+Change:   Minor UI Improvements to Job Server Manager.
+Change:   Fixed a bug in the file_import.php file that resulted in the entire path being used in the document name.  This occurred when the user 
+          didn't give the document a name on a Windows PC.
+Change:   Removed some debugging code from the MMS Integration.
+	  
+Version 1.83
+Added:    PHP-based Job Server with the ability to set the full text search indexing and to set the permissions on objects to those of a permissions
+          group.  The ability to purge deleted objects will be added at a later date.  The job server needs to be scheduled to run on a regular basis,
+          preferably every 15 minutes, by using scheduling a command such as "php -f /var/www/xoops/modules/dms/job_server.php".
+Change:   When importing a document, the filename of the document is automatically displayed in the "Name" field, if a name is not entered.
+Change:   Fixed a bug in the query function that resulted in a MySQL warning when other than a SELECT query was issued.
+Change:   Fixed a bug that can result in the everyone permissions not being changed when a permissions group is utilized.
+
+Version 1.82
+Added:    The stored file names, of a document, can now be synchronized with the name of the document.
+Change:   Simplified the Folder Configuration code.
+Change:   The FOLDER_ARCHIVE_FLAG is now the right-most bit of the FLAGS data type in the dms_object_misc table.
+
+Version 1.81
+Added:    When folder pages are displayed, hovering over the page number displays the first and last document name on the page.
+Added:    After a document is routed, the audit log detail screen now displays the inbox(es) where the document has been routed to.
+Change:   Deleted documents are removed from the Document History block.
+Change:   Documents with apostrophe's in the file name now have the apostrophe removed.  This fixes SQL errors created by the
+          existance of the apostrophe.
+Change:   When documents are copied, the properties are copied as well
+Change:   Misc. minor bug fixes.
+
+Version 1.80
+
+Added:     Alphabetical Sorting to the Single Directory Beta User Interface.
+Change:    Fixed bugs in paging system in Single Directory Beta User Interface.
+Change:    Misc., minor bug fixes.
+
+Version 1.70
+
+Added:     Capability to move document links (routed documents) to other folders.
+Added:     Groups of permissions can be created.  These groups can be used with the lifecycle system and can be configured only to change a sub-set of
+           permissions.  For example, it is possible to only change the group permissions when promoting a document to another stage in a lifecycle.
+Added:     When applying a lifecycle, a copy of the document can be left in the original folder.
+Added:     Beta releases of two greatly optimized user interfaces.  Optimization has been accomplished via the use of SQL query optimization.
+Added:     The "Propagate Permissions" administrative button can be disabled globally via the configuration screen.
+Added:     Administrators can set folders to provide an archive option to move the contents of a folder to an archive location.
+Added:     The folder options screen now has a link that gives a report of the total number of documents and sub-folders to editors and owners.
+Added:     Administrators can set folders to automatically apply a lifecycle when a document is imported or created.
+Added:     Documents can now be copied to a file system, if a file system directory is added in the DMS.
+Added:     2 database indexes to improve performance.
+Added:     A confirmation message has been added when importing documents.
+Change:    Fixed a bug that prevented the import from file system feature from working properly. 
+Change:    When creating a document, from a template, the name of the document is now entered after selecting the template.
+Change:    Re-enabled security on file_retrieve.php.
+Change:    All users are now displayed in the "users" section, when changing permissions.
+
+Version 1.60
+Added:     By selecting the "Search Current Document Versions Only" check box, from the configurations screen, Swish-E will only index the current 
+           version of each document.  This setting should be set upon the initial configuration, of the DMS module, and should not be changed.
+Added:     Online help system.
+Added:     Uploads larger than allowed by the php.ini file now terminate with an error.
+Added:     Documents can now be searched by the document owner permission and time created.
+Added:     Properties searches can now be limited to folders and sub-folders.
+Change:    Fixed a bug, in the file_checkin.php file, to prevent 0 byte uploads.
+Change:    Misc. minor interface fixes.
+   
+Version 1.50
+Added:     The configuration screen now has the option to enable or disable the displaying of the template and/or lifecycle with the document name.
+Added:     If configured, the document's version number can be added directly to a Word document, similar to the ADN System.  This system is called
+           the ADV System.
+Added:     It is now possible to revert to an older version of a document.  If the versioning system is enabled, a "Revert" function is available in
+           the Options menu.
+Added:     The folder move function is now confirmed via a pop-up window.
+Added:     The ADN System is now executed when checking in a document.
+Added:     When a document has been promoted to the final stage, all previous versions of that document are automatically deleted to save space.  This
+           feature has to be enabled.  In the future, this deletion will be as per lifecycle, not global.
+Added:     Lifecycle stages are now displayed in search results....if enabled.
+Added:     When checking-in a document from the main screen, a pop-up box is displayed afterwards indicating successful checkin.
+Added:     Document History block.  Up to the last 10 documents that have been viewed are displayed.  Clicking on the document name opens up the Options
+           Screen for the document.
+Added:     Custom create/view/edit pages for in-house use only.
+Added:     When in a lifecycle, a document can automatically be placed in an alphabetical sub-directory.  This option has to be enabled.
+Added:     If applicable, the lifecycle name and lifecycle stage is now displayed on the file_options screen.
+Change:    The configuration screen can now be reached from the Site Admin screen.
+Change:    Icons have replaced the text at the top right of the main screen.
+Change:    If while creating a document with a template, the document name is not entered, the template's document name will be used.
+Change:    After a document's properties or comments have been updated, a confirmation is displayed.
+Change:    After a document is created, the check-in version defaults to version 1.0.
+Change:    The buttons to the Apply Lifecycle screen are left-justified.
+Change:    When demoting a document, the document can now be demoted to any previous stage.
+Change:    If configured, the last lifecycle stage name will remain on a document that has reached the end of it's lifecycle.
+Change:    When applying a lifecycle, promoting, or demoting a document, the user returns to the options screen of the document.
+Change:    Fixed a bug, in the folder_options.php screen, that prevented the folder type from being properly displayed. (reported by camauz)
+Change:    The ADN and ADV systems will not make changes when a document is in the document templates folder.
+Change:    The ADN and ADV systems now work with MS-Excel documents.  A bug has been fixed that prevented the end of document files from being scanned
+           for the masks.
+Change:    The main query for displaying folders is now located in inc_dms_functions.php.
+Change:    Updated the readme.txt file.
+Change:    Changed the text options, on the main user interfaces, to icons.
+Change:    Misc. minor bug fixes.
+
+Version 1.40
+Added:     Status display screen displays the number of documents and folders in the DMS.  More information may be added to this screen in the future.
+Added:     On the initial install, the main screen configuration button takes the user to a special configuration screen that only contains the 
+           configuration for the document repository as this is the only configuration that is required to use the DMS.
+Added:     If enabled, in-boxes for routed documents are now created automatically.
+Added:     Folders can now be moved to other parent folders by the owner of the folder.
+Added:     Buttons, on the file_options.php and folder_options pages, that take the user directly to parts of the page without scrolling.
+Added:     Some actions are now confirmed via a pop-up window.  This window automatically disappears after 3.5 seconds and (in Firefox) will remain
+           in the same location if the page is scrolled.
+Change:    Routing, Lifecycles, Comments, Checkin/out are now disabled, by default, on installation.  They can be enabled on the 
+           configuration screen.  Since versioning is controlled by checkin/checkout, the "View older version" function is disabled if checkin/checkout
+           is disabled.
+Change:    Bug fixed that resulted in truncated filenames when downloading documents, if there was a space in the filename.  
+           (Fix contributed by mwoodman.)
+Change:    Bug fixed that resulted in the Anonymous user name being displayed when unsuccessfully routing documents.
+Change:    The templates folder is no longer automatically created and specified upon installation.  In order to use document templates, a folder for
+           the document templates must be created, templates uploaded, and the templates folder set in the configuration.
+Change:    Removed all Xoops-specific functions from file_route.php.
+Change:    If the DMS Page Title field is blank, no header is displayed.
+Change:    Misc. minor bug fixes.
+Change:    Bug fix to the ADN system.
+Change:    When importing files, if the "Name" field is left blank, the document's filename is used.
+Change:    Bug fix:  After changing document permissions, the permissions section of the web page is displayed.
+Change:    The notification system is now called the "folder subscription system."  The folder subscription system now works with all document functions,
+           if enabled. 
+Change:    Bug fix when setting the source of the groups in inc_dms_functions.php.
+
+Version 1.31
+Added:     Automatic document numbering for MS Word documents.  If configured, DMS can automatically add the document number to a property of a MS Word 
+           document. 
+
+Version 1.30
+Added:     Tabstops for various input fields and forms.
+Added:     Document titles can be searched via the Xoops search block.
+Change:    Fixed a bug that prevented the drop-down menus from working.
+Change:    Fixed a bug in the subscriptions system that prevented documents from being checked-out.
+Change:    Eliminated "browser flash" between web pages.  (Process contributed by mwoodman.) (Works best with Firefox.)
+Change:    Fixed bug that resulted in "file_view.php" does not exist error when an anonymous user does a properties search.
+Change:    DMS can now be made the default module if an anonymous user is not configured.  If the DMS module is to be displayed, without
+           a user logging in, an anonymous user will have to be set.
+Change:    Fixed a bug that resulted in folders not being created if they contain an apostrophe.
+Change:    Fixed mysql sql errors that resulted in problems installing on a Windows system.  
+
+Version 1.20
+Added:     A notification system has been added to allow the owner of a folder to configure the folder such that the a select list of groups and/or
+           users are e-mailed about changes in the folder.
+Change:    The Permissions system has been slightly adjusted to conform to the permissions system matrix.
+Change:    Forced the configuration screen to be left-justified regardless of the style sheets.
+Change:    Added an exit button to the configuration screen.
+Change:    Force the lifecycle stage names to be left-justified.
+Change:    Fixed a bug that prevented sub-folders from being displayed when selecting the template to use to create a document.
+
+Version 1.10
+Added:     The capability to force a permissions update has been added.  Users can now click on the "Refresh" link on the main page in order to clear
+           the permissions cache.  This will only appear if the permissions caching system is enabled.
+Added:     Users can now add comments to a version of a document.  If subscriptions are enabled and a user is subscribed, the comment will be added
+           to the e-mail.
+Added:     The default user interface can now be changed from the configuration screen.
+Added:     Administrators can now set permissions inheritance from the configuration screen.
+Added:     Permissions caching is now disabled by default and can be enabled on the configuration screen.  Enabling the permissions caching system will
+           provide a performance improvement on larger DMS installations.
+Added:     Administrators can now add and remove users from groups using an interface within DMS.
+Change:    With the exception of the Update Manager, all configuration is now accomplished through the Admin menu on the main menu.
+Change:    Users now require owner permission to change the permissions on a document or folder.
+Change:    Updated user interface, on the auditing screens, to the current standard.
+Change:    Moved all group handling functions to the portal abstraction layer.
+
+Version 1.00
+Added:     A "Portal Abstraction Layer" has been added, as a header file.  In the future, this will allow developers
+           to easily separate the DMS module from Xoops and utilize it elsewhere.  At this time, only the database calls
+           are directed here.  The Xoops specific function calls are still spread throughout the DMS module.
+Added:     Documents with an applied lifecycle now display the name of the lifecycle stage in parentheses after the 
+           document name, on the main screen.
+Added:     Documents, that have been created with a template, now have the template name displayed in parentheses, on
+           the main screen.
+Added:     If inherit_perms is set to 1, in the dms_config table, then when a document is imported or created the permissions are
+           inherited from the parent folder.
+To-Do:     E-mails now have a timestamp at the bottom.
+Change:    By setting the Document Storage Tuning value to 0, in the Document Repository configuration, all files will
+           be saved in a single directory as indicated in the Document Storage Path.  Setting this value to 0 is only
+           recommended for users who are having a problem uploading documents to the document repository and do not 
+           anticipate more than several thousand documents ever being uploaded into the system.
+Change:    When creating a document, the document name is now entered when selecting the template.  Also, the file name,
+           of the document, is created automatically by utilizing the document name.
+Change:    When creating lifecycles, the page is now reloaded when updating the lifecycle stage number, lifecycle stage
+           name, and lifecycle folder.  This should fix a bug that sometimes resulted in the lifecycle stage permissions
+           not being properly set.
+Change:    Miscellaneous bug fixes.
+Removed:   Unused files have been removed.
+
+Version 0.99
+  Added:   A default_interface row has been added to the dms_config table in preparation for other primary interfaces.
+  Added:   A subscriptions system has been added.  This allows users to "subscribe" to a document.  Once subscribed,
+           they will receive e-mails when a document has been checked-in or checked-out.
+  Added:   French language files have been added.  (Translation by Eric Wegrznowski.)
+  Added:   If more than a set number of documents is in a folder, the folder will only display that number of documents
+           and the remainder of the documents can be displayed by paging through the folder via the arrows that will
+           be displayed at the bottom of the folder.  This number is set by the doc_display_limit entry in the 
+           dms_config table.  This was added in order to prevent a folder with thousands of documents from excessively
+           loading down the web server.
+  Added:   If the number of documents, displayed in a folder, exceeds the number set by the doc_display_limit entry in 
+           the dms_config table, a "Sort By" option is displayed that allows you to sort by the first letter of the
+           document name of a document.
+  Added:   By setting the default_interface setting, in the dms_config table, to '2', the main interface will only 
+           display the active folder and it's parent folder.  This interface was added to optimize large document
+           repositories by only displaying the active folder and avoiding SQL queries that are used only to display
+           the folder structure.  In our production environment, with over 90,000 documents, the time to display a web
+           page was reduced from 15 to under 5 seconds.  Eventually, administrators will be able to change the interface
+           from a web page.
+  Added:   Disk directories can now be displayed in a web browser.  This allows the importation of documents from any
+           location, including documents that have been scanned and deposited in a directory.
+  Added:   A new table has been created to store any miscellaneous object data.  This table is named dms_object_misc.
+  Added:   Permanent folder deletion has been added for empty folders only.  Folders with child objects will only
+           be marked as deleted.
+  Added:   When a lifecycle is applied to a document, the document's permissions can be set to change as per the
+           permissions set in that stage of the lifecycle.
+  Change:  Permanent document deletion is now enabled when the DMS is installed.
+  Change:  Options menu on document, folder, and routed document options screens has been replaced by a DHTML menu.
+  Change:  The permissions caching system's configuration is no longer hard-coded.  It is now in the dms_config table.
+  Change:  index.php now includes inc_main_ui_1.php in preparation for the creation of the Version 2.0 interface.  Most
+           of the code formerly in index.php is now located in inc_main_ui_1.php.
+  Change:  Jpeg file types now supported by the migration compatibility code.
+  Change:  Apache/IE/SSL download fix applied.
+  Change:  Fixed a bug that prevented documents from being created from templates.
+  Change:  Bzip2 compressed files can now be used to update DMS when uploaded from Konquer.
+  Change:  Deleted folders no longer are displayed when selecting a folder in the lifecycle_stage_editor.php.
+  Change:  Icons have been changed to Crystal Icons.  Mark Rabideau submitted free crystal icons to replace the old
+           icons.  The old icons are still available in the images/orig directory, however.  
+  Change:  The status column has been removed.  Checked-out documents now have a lock displayed on their icon.
+  Change:  A folder for Document Templates is now added automatically during the installation of the DMS.  
+  Change:  Since a third folder type has been added, folder types can now be changed by administrators on the folder
+           options page via a drop-down box.  If a folder is going to be pointed at a directory on the filesystem,
+           the directory will have to be added in the space provided.
+  Change:  Minor user interface changes.
+  Change:  Change to swish-e code to allow full text search to work if swish-e returns a blank within the quotes.
+  
+Version 0.98
+  Added:   New versions of the DMS can now be uploaded into the DMS and installed by the DMS Update Manager.
+           Note:  This feature is currently not supported on Windows Servers.  It may function, however, if Windows 
+           ports of tar, bunzip2, and/or unzip are installed on the Windows Server and a path is added to these
+           utilities.
+  Added:   The dms_config table now contains a timestamp to record the time of the last config change.
+  Added:   Other languages can now be supported.  (Changes provided by Rui Gonca.)
+  Added:   Portugues.do.brasil is now supported.  (Translation by Rui Gonca.)
+  Added:   A web page has been added for administrators to select the Root Folder for Template Documents.  The object ID
+           can still be manually entered.
+  Added:   Documents can now be exported from the DMS by using the Export button on the Options page for the document or
+           routed document.
+  Added:   Recipients of routed documents can now receive an e-mail informing them of a routed document.
+  Added:   Documents stored in the DMS can now be e-mailed from the DMS if the sender has at least read-only permissions.
+  Added:   Documents can now be permanently deleted.  This deletion can either happen immediately or after a delay that
+           is set by the administrator.  Folders can not be permanently deleted at this time.
+  Added:   When configuring Full Text Search, there is now a button to write the Swish-E configuration files to the
+           repository directory.  This button will only appear if the repository is configured.  However, Swish-E still
+           has to be executed from the operating system shell or from a sheduled job in order to index the documents.
+  Change:  The configuration is now cached in a session variable.  The first time the DMS is executed, a session variable
+           to store the configuration is created.  Afterwards, only the timestamp is queried from the configuration and 
+           the configuration is only updated if this timestamp changes.  Otherwise, the cached configuration is used.  
+           This will help reduce the data transfered in SQL queries from the web server to the database server.
+  Change:  Fixed a bug that prevented a document from being copied to another folder.
+  Change:  Replaced file_open.php, file_view.php, and version_view.php files with file_retrieve.php.
+  Change:  Open empty folders are no longer displayed as being empty unless the folder is active.
+  Change:  If a "/" is at the end of the entered Document Storage Path or the SWISH-E path, it will now be 
+           automatically removed.
+  Change:  Fixed a bug where the "Document(s): and Version:" header would be displayed if there were documents found but
+           the user did not have access to the documents when doing a full text search.
+  Removed: The perms_limit_flag column, in the dms_object_perms table, has been removed.
+  Removed: link_move.php
+  
+Version 0.97
+  Added:   New icon for deleted files.  (Only visible to admins.)
+  Added:   "Tool Tips" for the icons on the main page.
+  Added:   In the properties search, documents can now be searched for by name.
+  Added:   Auditing entries are now created for documents movements within a lifecycle.
+  On Hold: A check box has been added to the permissions configuration for folders.  Selecting this checkbox will
+           limit a folder's child objects to a maximum of it's permissions set.
+  Change:  Fixed a bug that resulted in an extra extension being attached to a downloaded file.
+  Change:  Fixed javascript errors in the Lifecycle Manager that prevented the Lifecycle Manager from working
+           with the Firefox web browser.
+  Change:  Document names and properties, with an embedded apostrophe, are no longer truncated.
+  Change:  Folder names, with an embedded apostrophe, are no longer truncated.
+  Change:  Fixed a Javascript bug in the file_checkin.php file that prevented the version number from being properly
+           set in the Firefox web browser.
+  Change:  User interface visual improvements.
+  Change:  To properly exit the file_options.php page, a document must now have a name.
+  Change:  When creating documents from a template, the default name of "New Document" is entered.  This is done to
+           ensure that if a user does not properly exit from the file_options.php page, a document name is still 
+           listed in the DMS.
+  Change:  The configuration is now loaded into a global $dms_config array.  This will greatly reduce the number of
+           SQL queries executed by the DMS module.
+  Change:  Anonymous users are now forced to a maximum of read-only permissions regardless of the permissions set for
+           objects.
+  Change:  All time_stamp database columns have been reduced from varchar(30) to varchar(12)
+  Change:  A new time stamp has been added to indicate when a document is marked as deleted.
+  Change:  A user can no longer apply a lifecycle if there aren't any stages defined for the lifecycle.
+  
+    
+Version 0.96
+  Change:  Fixed bugs that prevented DMS from working with the Firefox web browser.
+  
+Version 0.95
+  Added:   An update managment system to assist users when upgrading to a newer version of the DMS module.
+  Added:   Added more features to the Interface Settings display to simplify adjusting the interface for 
+           different style sheets.  Most users will not have to change these settings.  The classes on all php
+           pages have been updated to utilize these settings.
+  Added:   Anonymous users can now have limited access the system.  An anonymous user needs to be created and 
+           an administrator needs to set this user in the DMS Configuration.  
+
+Version 0.94
+  Change:  Fixed a permissions bug that prevented users from creating folders and documents on a clean install.
+
+Version 0.93
+  Added:   Auditing   
+  Added:   The template utilized to create a document is now displayed on the file and link options screens.
+  Added:   The current version number is now displayed on the file and link options screens.
+  Added:   Administrators can enable or disable the Administrator's View from the Interface Settings screen.
+  Change:  Fixed bugs that prevented administrators from having complete system access.
+  Change:  Misc. bug fixes
+  Change:  Properties Searches now default to "contains."
+  Change:  Fixed a bug that prevented group permissions from properly functioning.
+  Change:  Documents are now displayed only if the folder is active in order to reduce the time required to display
+           a screen.
+  Change:  A permissions caching system has been added in order to reduce the amount of time required to display a screen.
+  Change:  When checking a document in, the next document sub-minor version number is selected automatically.  
+  Change:  Deleted documents are no longer displayed when utilizing a properties search.
+  Change:  File properties are now added after creating a document, not while creating a document.
+  Change:  Fixed a bug where the version numbers may not be properly incremented when checking in a document.  
+  Change:  The system now utilizes the document's original filename when viewing or checking out the document.  This will
+           assist the client system when it determines how to handle the file.
+  Change:  Users can no longer create folders, create files, or import files if they do not have edit or owner permissions
+           to a directory.
+   
+Version 0.92
+  Added:   Added a limit to the number of results returned when executing a properties search.  A 'search_limit' value
+           has been added to the dms_config table.
+  Added:   Added a limit to the number of results returned when executing a full text search.
+  Change:  Administrators can now view the properties of all documents.
+
+Version 0.91
+  Added:   A timestamp is now applied to routed documents and the user who routed the document is now displayed
+           in the options screen.
+  Added:   After an attempt has been made to route a document, the results of the routing attempt is displayed.
+  Added:   When a new document is created, it is now automatically checked-out and downloaded to the client.
+  Added:   The user's permissions level, for a document, is now displayed from both Options screens.
+  Added:   Users can now Checkout/Checkin/Cancel Checkout of documents from both Options screens.
+  Change:  Routed documents can now be moved to folders other than a user's inbox.
+  Change:  Fixed a bug where the link (routed document) permissions were not deleted when a link was deleted.
+  Change:  Improved the error checking when importing a document.
+  Change:  Minor misc. bug fixes.
+
+Version 0.9
+  Added:   Search is now limited by the permissions set on the document.
+  Added:   Users can now checkout/checkin documents on the via the search pages, if they have the correct permissions.
+  Added:   Web pages can now only be accessed by users with the permissions to access the web page....even if they type
+           in the URL.
+  Added:   Document properties can now have select boxes.  However, at this time, no administrative system exists to add
+           this feature.  This feature needs to be enabled via SQL scripting.
+  Change:  Groups and Users are now listed alphabetically, when checking/setting permissions.
+  Change:  Misc. user interface changes, bug fixes, and/or improvements.
+
+Version 0.8
+  Skipped
+  
+Version 0.7
+  Skipped
+  
+Version 0.6
+  Added:   Close all open folders function
+  Added:   Full text search integration with SWISH-E (can be disabled)
+  Added:   Properties are now customizable.
+           (Properties from version 0.5 and prior will have to be migrated.)
+  Added:   Documents can now be searched by properties.
+  Added:   Documents now have timestamps stored in the database and displayed on the Options screen.
+  Added:   Permissions can now be propagated from an upper-level folder to all of it's sub-folders and documents.
+  Change:  Document checkout now loads permits the local computer to load the correct application.
+           (Note:  This function does not work with browsers prior to IE 6.0.)
+  Change:  Misc. user interface changes/improvements.
+       
+Version 0.5:
+  Added:   Creation of documents via the use of templates.
+  Added:   Document Life Cycles (Permissions system needs added).
+  Added:   Keyword Search Screen (Search functionallity needs added).
+  Added:   File Copy and Move capability.
+  Change:  Document properties screen now displays the user name of the user who has checked-out the document, if the
+           user viewing the properties has at least browse permission to that document.
+  Change:  Non-administrative users are no longer able to create top-level folders.
+  Change:  Users are no longer able to make sub-folders in an inbox.
+  Change:  Misc. user interface changes/improvements.
+  
+Version 0.4:
+  Added:   Permissions system to manage user, group, and everyone permissions.
+  Added:   Administrator can now set the title for the DMS pages.
+  
+Version 0.3:
+  Added:   Document Routing 
+
+Version 0.2:
+  Added:   Document Properties
+  Added:   Document Versioning
+
+Version 0.1:
+  Basic document management, including check-in and check-out.
