@@ -64,31 +64,31 @@ $query = "SELECT count(*) as num_inboxes FROM ".$dmsdb->prefix("dms_objects")." 
 $num_inboxes = $dmsdb->query($query,'num_inboxes');
 
 print "  <tr class='".$dms_config['class_content']."'>\r";
-print "    <td width='25%'>\r";
+print "    <td width='25%' align='left'>\r";
 print "      Documents:\r";
 print "    </td>\r";
 
-print "    <td>\r";
+print "    <td align='left'>\r";
 print "      ".$num_docs."\r";
 print "    </td>\r";
 print "  </tr>\r";
 
 print "  <tr>\r";
-print "    <td>\r";
+print "    <td align='left'>\r";
 print "      Folders:";
 print "    </td>\r";
 
-print "    <td>\r";
+print "    <td align='left'>\r";
 print "      ".$num_folders."\r";
 print "    </td>\r";
 print "  </tr>\r";
 
 print "  <tr>\r";
-print "    <td>\r";
+print "    <td align='left'>\r";
 print "      Inboxes:";
 print "    </td>\r";
 
-print "    <td>\r";
+print "    <td align='left'>\r";
 print "      ".$num_inboxes."\r";
 print "    </td>\r";
 print "  </tr>\r";
@@ -100,11 +100,11 @@ $repo_total = disk_total_space($dms_config['doc_path']);
 $repo_used = $repo_total - $repo_free;
 
 print "  <tr>\r";
-print "    <td>\r";
+print "    <td align='left'>\r";
 print "      Document Repository:";
 print "    </td>\r";
 
-print "    <td>\r";
+print "    <td align='left'>\r";
 print "      ".dms_graph_single_bar($repo_used,$repo_total);
 //print "      <BR>";
 //print "      ".$repo_used."/".$repo_total."\r";

@@ -246,9 +246,11 @@ while($result_data = $dmsdb->getarray($result))
 		{
 		case FTS_INDEX:		$job_type = "Full Text Search Index";		break;
 		case OBJ_DELETION:	$job_type = "Purge Deleted Objects";		break;
+		case EXPIRE_DOCS:	$job_type = "Document Expiration";		break;
 		case PERM_CHANGE:	$job_type = "Change Permissions";		break;
 		case EXTERN_PUB:	$job_type = "Publish For External Retrieval";	break;
 		case EXEC_SCRIPT:	$job_type = "Execute Script";			break;
+		case PURGE_FOLDER:	$job_type = "Purge Folder";			break;
 		default:		$job_type = "Undefined";
 		}
 	
@@ -328,11 +330,13 @@ print "          <td ".$dms_config['class_content']." width='20%' style='text-al
 print "            Type:&nbsp;&nbsp;&nbsp;\r";
 print "            <select name='slct_job_type'>\r";
 
-for($index = 0; $index < 5; $index++) $selected[$index] = "";
+for($index = 0; $index < 6; $index++) $selected[$index] = "";
 if($function == "edit") $selected[$edit_job_type] = "SELECTED";
 
 print "              <option value='".FTS_INDEX."' ".$selected[FTS_INDEX].">Full Text Search Index</option>\r";
 print "              <option value='".OBJ_DELETION."' ".$selected[OBJ_DELETION].">Purge Deleted Objects</option>\r";
+print "              <option value='".PURGE_FOLDER."' ".$selected[PURGE_FOLDER].">Purge Folder</option>\r";
+print "              <option value='".EXPIRE_DOCS."' ".$selected[EXPIRE_DOCS].">Document Expiration</option>\r";
 print "              <option value='".PERM_CHANGE."' ".$selected[PERM_CHANGE].">Change Permissions</option>\r";
 print "              <option value='".EXTERN_PUB."' ".$selected[EXTERN_PUB].">Publish For External Retrieval</option>\r";
 print "              <option value='".EXEC_SCRIPT."' ".$selected[EXEC_SCRIPT].">Execute Script</option>\r";

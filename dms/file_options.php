@@ -60,6 +60,52 @@ if ( ($perms_level != 1) && ($perms_level != 2) && ($perms_level != 3) && ($perm
 	}
 
 
+function dms_get_date($var_name, $current_value = -1)
+	{
+// If there is a current_value, convert it into the appropriate information
+	if($current_value != -1)
+		{
+		$month  = (int)strftime("%m",$current_value);
+		$day    = (int)strftime("%d",$current_value);
+		$year   = (int)strftime("%Y",$current_value);
+		}
+		
+// Get Month
+	print "<select name='slct_".$var_name."_month'>\r";
+	for($index = 1;$index <= 12; $index++)
+		{
+		$selected = "";
+		if( ($current_value != -1) && ($index == $month) ) $selected = "SELECTED";
+		print "  <option ".$selected.">".$index."</option>\r";
+		}
+	print "</select>\r";
+
+	print "/&nbsp;";
+	
+// Get Day
+	print "<select name='slct_".$var_name."_day'>\r";
+	for($index = 1;$index <= 31; $index++)
+		{
+		$selected = "";
+		if( ($current_value != -1) && ($index == $day) ) $selected = "SELECTED";
+		print "  <option ".$selected.">".$index."</option>\r";
+		}
+	print "</select>\r";
+
+	print "/&nbsp;";
+	
+// Get Year
+	print "<select name='slct_".$var_name."_year'>\r";
+	for($index = 2007;$index <= 2030; $index++)
+		{
+		$selected = "";
+		if( ($current_value != -1) && ($index == $year) ) $selected = "SELECTED";
+		print "  <option ".$selected.">".$index."</option>\r";
+		}
+	print "</select>\r";
+	}
+
+	
 function dms_get_obj_path($obj_id)
 	{
 	global $dmsdb;
@@ -124,6 +170,28 @@ if (dms_get_var("hdn_update_comments") == "confirm")
 	dms_message("The document comments have been updated.");
 	}
 
+if(dms_get_var("hdn_update_doc_exp") == "confirm")
+	{
+	$obj_id=dms_get_var("hdn_obj_id_doc_exp");
+	
+	$expire_month = dms_get_var("slct_time_stamp_expire_month");
+	$expire_day = dms_get_var("slct_time_stamp_expire_day");
+	$expire_year = dms_get_var("slct_time_stamp_expire_year");
+	$time_stamp_expire = mktime(0,0,0,$expire_month,$expire_day,$expire_year);
+	
+	$enable_doc_expiration = dms_get_var_chk("chk_document_expiration_enable");
+	if($enable_doc_expiration == 0) $time_stamp_expire = '0';
+	
+	$query  = "UPDATE ".$dmsdb->prefix('dms_objects')." SET ";
+	$query .= "time_stamp_expire='".$time_stamp_expire."' WHERE obj_id='".$obj_id."'";
+	$dmsdb->query($query);
+
+	dms_auditing($obj_id,"document/update expiration:".$time_stamp_expire);
+	
+	dms_message("The document expiration settings have been updated.");
+	}
+
+	
 	  
 if (dms_get_var("hdn_update_options") == "confirm")
 	{
@@ -150,7 +218,7 @@ else
 	{  
 	// Get object information
 	$query  = "SELECT template_obj_id,obj_name,obj_status,obj_checked_out_user_id,lifecycle_id, lifecycle_stage, ";
-	$query .= "time_stamp_create,current_version_row_id ";
+	$query .= "time_stamp_create,time_stamp_expire,current_version_row_id ";
 	$query .= "FROM ".$dmsdb->prefix("dms_objects")." ";
 	$query .= "WHERE obj_id='".$obj_id."'";  
 	$object = $dmsdb->query($query,'ROW');   
@@ -180,8 +248,9 @@ else
 	if($subscribed > 0) $subscribed = TRUE;
 	else $subscribed = FALSE;
 
-	include XOOPS_ROOT_PATH.'/header.php';
-
+	//include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
+	
 // Message Box
 include_once 'inc_message_box.php';
 dms_message_box();
@@ -202,7 +271,7 @@ print "<script type='text/javascript' src='".XOOPS_URL."/modules/dms/layersmenu.
 print "<script language='JavaScript'>\r";
 print "<!--\r";
 print "currentX = -1;\r";
-print "function grabMouseX(e) {\r";
+print "function fo_grabMouseX(e) {\r";
 print "  if ((DOM && !IE4) || Opera5) {\r";
 print "    currentX = e.clientX;\r";
 print "    } else if (NS4) {\r";
@@ -225,26 +294,26 @@ print "</script>\r";
 print "<script type='text/javascript'>\r";
 print "<!--\r";
 
-print "function popUpMenu() {\r";
-print "shutdown();\r";
+print "function fo_popUpMenu() {\r";
+print "fo_shutdown();\r";
 print "setleft('div_menu',currentX);\r";
 print "popUp(\"div_menu\",true);\r";
 print "}\r";
 
-print "function moveLayers() {\r";
-print "grabMouseX;\r";
+print "function fo_moveLayers() {\r";
+print "fo_grabMouseX;\r";
 print "setleft('div_menu',currentX);\r";
 print "settop('div_menu',currentY);\r";
 print "}\r";
 
-print "function shutdown() {\r";
+print "function fo_shutdown() {\r";
 print "popUp('div_menu',false);\r";
 print "}\r";
 
 print "if (NS4) {\r";
-print "document.onmousedown = function() { shutdown(); }\r";
+print "document.onmousedown = function() { fo_shutdown(); }\r";
 print "} else {\r";
-print "document.onclick = function() { shutdown(); }\r";
+print "document.onclick = function() { fo_shutdown(); }\r";
 print "}\r";
 
 print "// -->\r";
@@ -317,9 +386,10 @@ if ( ($perms_level == EDIT) || ($perms_level == OWNER) )
 		}
 
 	// Copy/Move/Delete Buttons
-	if (( $checked_out==FALSE) || ($dms_admin_flag == 1) )
+	if ( ( $checked_out==FALSE) || ($dms_admin_flag == 1) )
 		{  
-		if (($checked_out==FALSE) && ($object->lifecycle_id == 0))
+		//if (($checked_out==FALSE) && ($object->lifecycle_id == 0))
+		if ( ($checked_out==FALSE) && ( ($object->lifecycle_id == 0) || ($dms_admin_flag == 1) ) )
 			{
 			print "<a href='file_copy.php?obj_id=".$obj_id."'>" . _DMS_COPY . "</a>&nbsp;\r";
 			print "<a href='file_move.php?obj_id=".$obj_id."'>" . _DMS_MOVE . "</a>&nbsp;\r";
@@ -337,7 +407,7 @@ if ( ($perms_level == READONLY) || ($perms_level == EDIT) || ($perms_level == OW
 	// E-mail button and Export buttons
 	if($dms_config['document_email_enable']=='1')
 		{
-		print "<a href='file_email.php?obj_id=".$obj_id."&return_url=file_options.php?obj_id=".$obj_id."'>". _DMS_EMAIL. "</a>&nbsp;&nbsp;";
+		print "<a href='obj_email.php?obj_id=".$obj_id."&return_url=file_options.php?obj_id=".$obj_id."'>". _DMS_EMAIL. "</a>&nbsp;&nbsp;";
 		}
 	
 	print "<a href='file_retrieve.php?function=export&obj_id=".$obj_id."'>" . _DMS_EXPORT . "</a>\r";
@@ -346,13 +416,13 @@ if ( ($perms_level == READONLY) || ($perms_level == EDIT) || ($perms_level == OW
 //print "<BR><a href='#' onclick='exit_to_main_page();'>" . _DMS_EXIT . "</a><BR>\r";
 
 print "  <BR><BR>";
-print "  <a href='#' onmouseover='shutdown();'>[Close]</a>\r";
+print "  <a href='#' onmouseover='fo_shutdown();'>[Close]</a>\r";
 
 
 print "</td></tr>\r";
 /*
 print "<tr><td style='margin-top: 5px; font-size: smaller; text-align: right;'>\r";
-print "<a href='#' onmouseover='shutdown();'>[Close]</a>\r";
+print "<a href='#' onmouseover='fo_shutdown();'>[Close]</a>\r";
 print "</td></tr>\r";
 */
 print "</table>\r";
@@ -361,7 +431,7 @@ print "</div>\r";
 
 print "<script language='JavaScript'>\r";
 print "<!--\r";
-print "moveLayers();\r";
+print "fo_moveLayers();\r";
 print "loaded = 1;\r";
 print "// -->\r";
 print "</script>\r";
@@ -466,7 +536,7 @@ print "</script>\r";
 	if ( ($perms_level == READONLY) || ($perms_level == EDIT) || ($perms_level == OWNER) ) 
 		{
 		// Options Menu
-		print "      <input type='button' name='btn_options' value='"._DMS_OPTIONS."' onmouseover='grabMouseX(event); moveLayerY(\"div_menu\", currentY, event); popUpMenu();'>";
+		print "      <input type='button' name='btn_options' value='"._DMS_OPTIONS."' onmouseover='fo_grabMouseX(event); moveLayerY(\"div_menu\", currentY, event); fo_popUpMenu();'>";
 		print "&nbsp;&nbsp;";
 		// Options Menu End
 		}
@@ -594,6 +664,37 @@ print "</script>\r";
 		print "        </form>\r";
 		}
 		
+	
+	//  Document Expiration
+	if ($dms_config['doc_expiration_enable'] == TRUE)
+		{
+		print "        <form method='post' name='frm_document_expiration' action='file_options.php'>\r";
+		print "        <tr><td colspan='2' align='left' ".$dms_config['class_subheader'].">&nbsp;Document Expiration:</td></tr>\r";
+
+		print "        <tr><td colspan='2'><BR></td></tr>\r";
+		print "        <tr><td align='left' colspan='2'>&nbsp;&nbsp;&nbsp;Enable Document Expiration:&nbsp;&nbsp;&nbsp;";
+		
+		$chk_document_expiration_enable = "";
+		if($object->time_stamp_expire > 0) $chk_document_expiration_enable = " CHECKED";
+		print "<input type='checkbox' name='chk_document_expiration_enable'".$chk_document_expiration_enable.">";
+		print "        </td></tr>\r";
+
+		print "        <tr><td align='left' colspan='2'>&nbsp;&nbsp;&nbsp;Expire Document On:&nbsp;&nbsp;&nbsp;";
+		dms_get_date("time_stamp_expire",$object->time_stamp_expire);
+		print "</td></tr>\r";
+		print "        <tr><td colspan='2'><BR></td></tr>\r";
+		
+		print "        <tr><td align='left' colspan='2'>&nbsp;&nbsp;&nbsp;";
+		print "<input type='submit' name='btn_document_expiration_update' value='Update'>";
+		print "        </td></tr>\r";
+		
+		print "        <tr><td colspan='2'><BR></td></tr>\r";
+		
+		print "        <input type='hidden' name='hdn_obj_id_doc_exp' value='".$obj_id."'>\r";
+		print "        <input type='hidden' name='hdn_update_doc_exp' value='confirm'>\r";
+		print "        </form>\r";
+		}
+	
 	// Document has been checked-out
 		     
 	if ($checked_out == TRUE)
@@ -690,12 +791,12 @@ print "</script>\r";
 		
 		print "        <tr>\r";
 		print "          <td align='left'>&nbsp;&nbsp;&nbsp;Lifecycle Name:</td>\r";
-		print "          <td>".$lifecycle_name."</td>\r";
+		print "          <td align='left'>".$lifecycle_name."</td>\r";
 		print "        </tr>\r";
 	
 		print "        <tr>\r";
 		print "          <td align='left'>&nbsp;&nbsp;&nbsp;Lifecycle Stage:</td>\r";
-		print "          <td>".$lifecycle_stage_name."</td>\r";
+		print "          <td align='left'>".$lifecycle_stage_name."</td>\r";
 		print "        </tr>\r";
 		}
 		
@@ -800,7 +901,8 @@ foreach ($GLOBALS as $key=>$value)
 	print "\$GLOBALS[\"$key\"]==$value<br>";
 	}
 */  
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	include 'inc_pal_footer.php';
+	//include_once XOOPS_ROOT_PATH.'/footer.php';
 	}
 
 dms_show_mb();

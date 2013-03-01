@@ -116,11 +116,14 @@ if (dms_get_var("hdn_checkin_file_confirm") == "confirm")
 		
 		$file_name = dms_strprep($_FILES[$temp_file_name]['name']);
 		
+		$file_type = $_FILES[$temp_file_name]['type'];
+		if($dms_config['OS']=="Linux") $file_type = trim(exec('file -bi '. escapeshellarg($dest_path_and_file)));
+		
 		// Update the entry in dms_object_versions and store the appropriate information.
 		$query  = "UPDATE ".$dmsdb->prefix('dms_object_versions')." SET ";
 		$query .= "init_version_flag='0',";
 		$query .= "file_name='".$file_name."',";
-		$query .= "file_type='".$_FILES[$temp_file_name]['type']."',";
+		$query .= "file_type='".$file_type."',";
 		$query .= "file_size='".$_FILES[$temp_file_name]['size']."',";
 		$query .= "time_stamp='".dms_get_var('hdn_time_stamp')."' ";
 		$query .= "WHERE row_id='".$db_row_id."'";
@@ -162,6 +165,9 @@ if (dms_get_var("hdn_checkin_file_confirm") == "confirm")
 		else die(_DMS_FILE_INACCESSABLE);
 
 		$file_name = dms_strprep($_FILES[$temp_file_name]['name']);
+
+		$file_type = $_FILES[$temp_file_name]['type'];
+		if($dms_config['OS']=="Linux") $file_type = trim(exec('file -bi '. escapeshellarg($dest_path_and_file)));
 		
 		// Add a new version of this file to dms_object_versions
 		// Create an entry in dms_object_versions and store the appropriate information.
@@ -171,7 +177,7 @@ if (dms_get_var("hdn_checkin_file_confirm") == "confirm")
 		$query .= $obj_id."','";
 		$query .= $partial_path_and_file."','";
 		$query .= $file_name."','";
-		$query .= $_FILES[$temp_file_name]['type']."','";
+		$query .= $file_type."','";
 		$query .= $_FILES[$temp_file_name]['size']."','";
 		$query .= dms_get_var('hdn_new_major_version')."','";
 		$query .= dms_get_var('hdn_new_minor_version')."','";
@@ -290,7 +296,7 @@ else
 		end();
 		}
     
-	include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
 	   
 	$obj_id = dms_get_var('obj_id');
 	
@@ -431,24 +437,27 @@ else
 
 	// Comments
 	
-	$query = "SELECT current_version_row_id FROM ".$dmsdb->prefix("dms_objects")." WHERE obj_id='".$obj_id."'";
-	$current_version_row_id = $dmsdb->query($query,"current_version_row_id");
-
-	$query  = "SELECT row_id, comment FROM ".$dmsdb->prefix("dms_object_version_comments")." ";
-	$query .= " WHERE dov_row_id='".$current_version_row_id."'";
-	$result = $dmsdb->query($query,"ROW");
-	$num_rows = $dmsdb->getnumrows();
-
-	if($perms_level == READONLY) $readonly = "READONLY";
-	else $readonly = "";
+	if($dms_config['comments_enable'] == '1')
+		{
+		$query = "SELECT current_version_row_id FROM ".$dmsdb->prefix("dms_objects")." WHERE obj_id='".$obj_id."'";
+		$current_version_row_id = $dmsdb->query($query,"current_version_row_id");
 	
-	print "        <tr><td colspan='2' align='left' ".$dms_config['class_content'].">Comments:</td></tr>\r";
+		$query  = "SELECT row_id, comment FROM ".$dmsdb->prefix("dms_object_version_comments")." ";
+		$query .= " WHERE dov_row_id='".$current_version_row_id."'";
+		$result = $dmsdb->query($query,"ROW");
+		$num_rows = $dmsdb->getnumrows();
 	
-	print "        <tr><td colspan='2' align='left' ".$dms_config['class_content'].">\r";
-	print "          &nbsp;&nbsp;&nbsp;<textarea name='txt_comments' rows='4' cols='80' ".$readonly.">";
-	if($num_rows > 0) print $result->comment;
-	print "</textarea>\r";
-	print "        </td></tr>\r";
+		if($perms_level == READONLY) $readonly = "READONLY";
+		else $readonly = "";
+		
+		print "        <tr><td colspan='2' align='left' ".$dms_config['class_content'].">Comments:</td></tr>\r";
+		
+		print "        <tr><td colspan='2' align='left' ".$dms_config['class_content'].">\r";
+		print "          &nbsp;&nbsp;&nbsp;<textarea name='txt_comments' rows='4' cols='80' ".$readonly.">";
+		if($num_rows > 0) print $result->comment;
+		print "</textarea>\r";
+		print "        </td></tr>\r";
+		}
 
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
 	
@@ -515,8 +524,7 @@ else
 	print "  select_version(".$first_available_flag.");\r";
 	
 	print "</SCRIPT>\r";  
-
       
-  include_once XOOPS_ROOT_PATH.'/footer.php';
-  }
+	include 'inc_pal_footer.php';
+	}
 ?>

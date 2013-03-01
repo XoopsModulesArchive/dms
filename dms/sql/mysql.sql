@@ -8,7 +8,7 @@ CREATE TABLE dms_config (
 )  TYPE=MyISAM;
 
 INSERT INTO dms_config
-  VALUES ('version','1.91');
+  VALUES ('version','1.95');
 INSERT INTO dms_config
   VALUES ('time_stamp','0');
 INSERT INTO dms_config
@@ -47,6 +47,14 @@ INSERT INTO dms_config
   VALUES ('full_text_search_cdo','0');
 INSERT INTO dms_config
   VALUES ('search_limit','100');
+INSERT INTO dms_config
+  VALUES ('search_summary_flag','1');
+INSERT INTO dms_config
+  VALUES ('search_summary_c_before','100');
+INSERT INTO dms_config
+  VALUES ('search_summary_c_after','300');
+INSERT INTO dms_config
+  VALUES ('search_results_per_page','10');
 INSERT INTO dms_config
   VALUES ('swish-e_path','');
 INSERT INTO dms_config
@@ -155,6 +163,8 @@ INSERT INTO dms_config
   VALUES ('OS','unknown');
 INSERT INTO dms_config
   VALUES ('write_job_server_config','0');
+INSERT INTO dms_config
+  VALUES ('doc_expiration_enable','0');
   
 #
 # Table structure for `dms_object_properties_sb`
@@ -203,6 +213,7 @@ CREATE TABLE dms_objects (
   time_stamp_expire varchar(12) NOT NULL default '0',
   misc_text varchar(255) NOT NULL default '',
   file_type varchar(50) NOT NULL default 'unchecked',
+  num_views smallint(8) NOT NULL default '0',  
   PRIMARY KEY (obj_id), INDEX (obj_owner)
 )  TYPE=MyISAM;
 
@@ -247,7 +258,7 @@ CREATE TABLE dms_object_versions (
 CREATE TABLE dms_object_version_comments (
   row_id bigint(14) unsigned NOT NULL auto_increment,
   dov_row_id bigint(14) unsigned NOT NULL default '0',
-  comment text NOT NULL default '',
+  comment text,  # NOT NULL default '',
   PRIMARY KEY (row_id)
 ) TYPE=MyISAM;
 
@@ -373,7 +384,7 @@ CREATE TABLE dms_subscriptions (
 CREATE TABLE dms_groups (
   group_id bigint(14) unsigned NOT NULL auto_increment,
   group_name varchar(50) NOT NULL default '',
-  group_description text NOT NULL default '',
+  group_description text,
   group_type varchar(10) NOT NULL default 'PERMS',
   PRIMARY KEY (group_id)
 ) TYPE=MyISAM;

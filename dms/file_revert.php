@@ -225,7 +225,7 @@ else
 		end();
 		}
     
-	include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
 	   
 	$obj_id = dms_get_var("obj_id");
 	
@@ -450,6 +450,6 @@ else
 	print "</SCRIPT>\r";  
 
       
-  include_once XOOPS_ROOT_PATH.'/footer.php';
+  include_once 'inc_pal_footer.php';
   }
 ?>

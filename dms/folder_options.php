@@ -61,16 +61,18 @@ if (dms_get_var("hdn_update_options") == "confirm" )
 	}
 else
 	{
-	include XOOPS_ROOT_PATH.'/header.php';
+	//include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
 	
 	// Get object information
 	$query  = "SELECT obj_status, obj_type, obj_name from ".$dmsdb->prefix("dms_objects")." ";
 	$query .= "WHERE obj_id='".$obj_id."'";  
 	$result = $dmsdb->query($query,'ROW');
 	
-	// Get the folder_archive_flag and the doc_name_sync_flag.
+	// Get the folder_archive_flag, doc_name_sync_flag, and disp_file_comments_flag.
 	$folder_archive_flag = FALSE;
 	$doc_name_sync_flag = FALSE;
+	$disp_file_comments_flag = FALSE;
 	$query  = "SELECT data FROM ".$dmsdb->prefix("dms_object_misc")." ";
 	$query .= "WHERE obj_id='".$obj_id."' AND data_type='".FLAGS."'";
 	$flags = $dmsdb->query($query,'data');
@@ -79,6 +81,7 @@ else
 
 	if ( ($flags & 1) == 1 ) $folder_archive_flag = TRUE;
 	if ( ($flags & 2) == 2 ) $doc_name_sync_flag = TRUE;
+	if ( ($flags & 4) == 4 ) $disp_file_comments_flag = TRUE;
 	
 	// Message Box
 	include_once 'inc_message_box.php';
@@ -99,7 +102,7 @@ else
 	print "<script language='JavaScript'>\r";
 	print "<!--\r";
 	print "currentX = -1;\r";
-	print "function grabMouseX(e) {\r";
+	print "function fo_grabMouseX(e) {\r";
 	print "  if ((DOM && !IE4) || Opera5) {\r";
 	print "    currentX = e.clientX;\r";
 	print "    } else if (NS4) {\r";
@@ -122,26 +125,26 @@ else
 	print "<script type='text/javascript'>\r";
 	print "<!--\r";
 	
-	print "function popUpMenu() {\r";
-	print "shutdown();\r";
+	print "function fo_popUpMenu() {\r";
+	print "fo_shutdown();\r";
 	print "setleft('div_menu',currentX);\r";
 	print "popUp(\"div_menu\",true);\r";
 	print "}\r";
 	
-	print "function moveLayers() {\r";
-	print "grabMouseX;\r";
+	print "function fo_moveLayers() {\r";
+	print "fo_grabMouseX;\r";
 	print "setleft('div_menu',currentX);\r";
 	print "settop('div_menu',currentY);\r";
 	print "}\r";
 	
-	print "function shutdown() {\r";
+	print "function fo_shutdown() {\r";
 	print "popUp('div_menu',false);\r";
 	print "}\r";
 	
 	print "if (NS4) {\r";
-	print "document.onmousedown = function() { shutdown(); }\r";
+	print "document.onmousedown = function() { fo_shutdown(); }\r";
 	print "} else {\r";
-	print "document.onclick = function() { shutdown(); }\r";
+	print "document.onclick = function() { fo_shutdown(); }\r";
 	print "}\r";
 	
 	print "// -->\r";
@@ -162,7 +165,7 @@ else
 		}
 	else
 		{
-		if($folder_archive_flag==TRUE)   // Temporarily add the Archive and Copy link here like this
+		if($folder_archive_flag==TRUE)
 			{
 			print "<a href='folder_archive.php?obj_id=".$obj_id."'>Archive Documents</a><BR>\r";
 			print "<a href='folder_copy.php?obj_id=".$obj_id."'>Copy Documents</a><BR>\r";
@@ -173,7 +176,7 @@ else
 		}
 		
 	print "  <BR>";
-	print "  <a href='#' onmouseover='shutdown();'>[Close]</a>\r";
+	print "  <a href='#' onmouseover='fo_shutdown();'>[Close]</a>\r";
 	
 	print "</td></tr>\r";
 	/*
@@ -213,7 +216,7 @@ else
 	
 	if($perms_level == OWNER || $dms_admin_flag == 1)
 		{
-		print "          <input type='button' name='btn_options' value='"._DMS_OPTIONS."' onmouseover='grabMouseX(event); moveLayerY(\"div_menu\", currentY, event); popUpMenu();'>&nbsp;&nbsp;";
+		print "          <input type='button' name='btn_options' value='"._DMS_OPTIONS."' onmouseover='fo_grabMouseX(event); moveLayerY(\"div_menu\", currentY, event); fo_popUpMenu();'>&nbsp;&nbsp;";
 		}
 			
 	// Permissions Button
@@ -292,6 +295,13 @@ else
 		else $check = "";
 		print "          &nbsp;&nbsp;&nbsp;Synchronize File Names With Document Names:  ";
 		print "<input type='checkbox' name='chk_doc_name_sync_flag' ".$check.">\r";
+		
+		print "<BR>";
+
+		if($disp_file_comments_flag==TRUE) $check = " checked";
+		else $check = "";
+		print "          &nbsp;&nbsp;&nbsp;Dispay Document Comments:  ";
+		print "<input type='checkbox' name='chk_disp_file_comments_flag' ".$check.">\r";
 		
 		print "<BR><BR>";
 		
@@ -415,7 +425,8 @@ else
 	print "  </tr>\r";
 	print "</table>\r";
 	
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	//include_once XOOPS_ROOT_PATH.'/footer.php';
+	include 'inc_pal_footer.php';
 	}
 
 dms_show_mb();

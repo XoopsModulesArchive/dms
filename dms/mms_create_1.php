@@ -28,7 +28,7 @@
 // mms_create.php
 
 include '../../mainfile.php';
-include_once 'defines.php';
+//include_once 'defines.php';
 include_once 'inc_dms_functions.php';
 include_once 'inc_dest_path_and_file.php';
 include_once 'inc_file_properties.php';
@@ -44,7 +44,6 @@ $mms_property_num = '3';   // This sets the property number that stores the MMS 
 
 	include XOOPS_ROOT_PATH.'/header.php';
 //	$location="mms_create.php"; 
-//	$obj_id = -1;    // Fake object id....used to force folder_expand.php and folder_contract.php to return to this page.
 	
 	// Get active folder
 //	$active_folder = dms_active_folder();
@@ -75,21 +74,22 @@ $mms_property_num = '3';   // This sets the property number that stores the MMS 
 	
 	print "  <table width='100%'>\r";
 	print "  <form method='post' name='frm_mms_create' action='mms_create_2.php'>\r";
-	display_dms_header(2);
-	
+	//display_dms_header(2);
+	dms_display_header(2,"","",FALSE);
+
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
 	print "  <tr><td colspan='2' align='left'><b>Create or Import Document:</b></td></tr>\r";
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
 
 	print "  <tr>\r";
-	print "    <td colspan='2' align='left' class='".$dms_config['class_content']."'>\r";
+	print "    <td colspan='2' align='left' ".$dms_config['class_content'].">\r";
 	dms_display_spaces(3);
 	print "      <input type='radio' name='rad_function' value='CREATE' tabindex='".$dms_tab_index++."' CHECKED>  Create Document";
 	print "    </td>\r";
 	print "  </tr>\r";
 
 	print "  <tr>\r";
-	print "    <td colspan='2' align='left' class='".$dms_config['class_content']."'>\r";
+	print "    <td colspan='2' align='left' ".$dms_config['class_content'].">\r";
 	dms_display_spaces(3);
 	print "      <input type='radio' name='rad_function' value='IMPORT' tabindex='".$dms_tab_index++."'>  Import Document";
 	print "    </td>\r";
@@ -98,10 +98,10 @@ $mms_property_num = '3';   // This sets the property number that stores the MMS 
 	print "  <tr><td colspan='2'><br></td></tr>\r";
 		
 	print "  <tr>\r";
-	print "    <td colspan='2' align='left' class='".$dms_config['class_content']."'>\r";  
+	print "    <td colspan='2' align='left' ".$dms_config['class_content'].">\r";  
 	dms_display_spaces(3);
 	print "      Document Name:";
-	print "      <input type='text' name='txt_obj_name' size='40' maxlength='250' class='".$dms_config['class_content']."' tabindex='".$dms_tab_index++."'>\r";
+	print "      <input type='text' name='txt_obj_name' size='40' maxlength='250' ".$dms_config['class_content']." tabindex='".$dms_tab_index++."'>\r";
 	print "    </td>\r";
 	print "  </tr>\r";
 	

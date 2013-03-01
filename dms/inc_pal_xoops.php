@@ -359,6 +359,22 @@ class dms_pal_user
 		$query .= "WHERE uid='".$user_id."'";
 		return $dmsdb->query($query,"uname");
 		}
+
+	function list_all()
+		{
+		$user_list = array();
+		global $dmsdb;
+		
+		$query = "SELECT uid,uname FROM ".$dmsdb->prefix("users");
+		$result = $dmsdb->query($query);
+		
+		while($result_data = $dmsdb->getarray($result))
+			{
+			$user_list[$result_data['uid']]=$result_data['uname'];
+			}
+		
+		return $user_list;
+		}
 }
 
 $dms_users = new dms_pal_user;

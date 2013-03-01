@@ -102,6 +102,10 @@ if(dms_get_var('hdn_temp_file_name') != FALSE)
 //print $obj_name;
 //exit(0);
 	
+	//determine the file mime type.
+	$file_type = $_FILES[$temp_file_name]["type"];
+	//if($dms_config['OS']=="Linux") $file_type = trim(exec('file -bi '. escapeshellarg($dest_path_and_file)));
+
 	// Create the new object in dms_objects
 	$query  = "INSERT INTO ".$dmsdb->prefix('dms_objects')." (obj_type,obj_name,obj_owner,time_stamp_create,file_type)";
 	$query .= " VALUES ('";
@@ -109,7 +113,7 @@ if(dms_get_var('hdn_temp_file_name') != FALSE)
 	$query .= $obj_name."','";
 	$query .= $active_folder."','";
 	$query .= $time_stamp."','";
-	$query .= $_FILES[$temp_file_name]["type"]."')";
+	$query .= $file_type."')";
 	
 	//print $query;  
 	//print "<BR>";    
@@ -141,7 +145,7 @@ if(dms_get_var('hdn_temp_file_name') != FALSE)
 	$query .= $partial_path_and_file."','";
 	$query .= $file_name."','";
 	//$query .= $_FILES[$HTTP_POST_VARS['hdn_temp_file_name']]['name']."','";
-	$query .= $_FILES[$temp_file_name]["type"]."','";
+	$query .= $file_type."','";
 	$query .= $_FILES[$temp_file_name]["size"]."','";
 	$query .= dms_get_var("slct_version_major")."','";
 	$query .= dms_get_var("slct_version_minor")."','";
@@ -204,7 +208,8 @@ if(dms_get_var('hdn_temp_file_name') != FALSE)
 	}
 else
 	{
-	include XOOPS_ROOT_PATH.'/header.php';
+	//include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
 	
 	print "<script language='JavaScript'>\r";
 	//print "<!--\r";
@@ -248,7 +253,7 @@ else
 	print "<form name='frm_file_import' method='post' action='file_import.php' enctype='multipart/form-data'>\r";
 	print "<table width='100%'>\r";
 	
-	display_dms_header();
+	dms_display_header(2,"","",FALSE);
 	print "  <tr><td colspan='2' align='left'><BR></td></tr>\r";
 	print "  <tr><td colspan='2' align='left'><b>Import Document:</b></td></tr>\r";
 
@@ -294,6 +299,7 @@ else
 	print("  document.frm_file_import.txt_file_name.focus();");
 	print("</SCRIPT>");  
 	
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	include 'inc_pal_footer.php';
+	//include_once XOOPS_ROOT_PATH.'/footer.php';
   }
 ?>

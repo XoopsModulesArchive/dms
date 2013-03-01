@@ -32,8 +32,11 @@ define('FILE',0);
 define('FOLDER',1);
 define('INBOXEMPTY',2);
 define('INBOXFULL',3);
-define('DOCLINK',4);
+define('DOCLINK',4);                    // Used for routed documents only....don't use, replace with ROUTEDDOC
+define('ROUTEDDOC',4);                  // Replaces DOCLINK
 define('DISKDIR',5);
+define('FILELINK',8);                  // Link to documents...created by admins
+define('FOLDERLINK',9);                // Link to folders...created by admins
 define('LIFECYCLE',20);
 define('LIFECYCLE_STAGE',21);
 define('PERMISSION',30);
@@ -87,6 +90,8 @@ define('OBJ_DELETION',1);
 define('PERM_CHANGE',2);
 define('EXTERN_PUB',3);
 define('EXEC_SCRIPT',4);
+define('EXPIRE_DOCS',5);
+define('PURGE_FOLDER',6);
 
 // Scheduling
 define('ON',0);

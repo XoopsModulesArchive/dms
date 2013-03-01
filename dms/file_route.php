@@ -64,7 +64,7 @@ if ( ($perms_level != 1) && ($perms_level != 2) && ($perms_level != 3) && ($perm
 
 if (dms_get_var("hdn_route_file_confirm") == "TRUE")
 	{
-	include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
 
 	// Get the name of the document
 	$query  = "SELECT obj_name FROM ".$dmsdb->prefix('dms_objects')." ";
@@ -212,11 +212,11 @@ if (dms_get_var("hdn_route_file_confirm") == "TRUE")
  
   //print_r ($unroutable_users);
   
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	include 'inc_pal_footer.php';
 	}
 else
 	{
-	include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
   
 	// Get file information
 	$query  = "SELECT obj_name from ".$dmsdb->prefix("dms_objects")." ";
@@ -415,7 +415,7 @@ else
 	print "  <input type='hidden' name='hdn_return_url' value='".$return_url."'>\r";
 	print "</form>\r";
 
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	include 'inc_pal_footer.php';
 	}
 
 

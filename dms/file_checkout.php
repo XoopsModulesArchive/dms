@@ -82,8 +82,9 @@ else
 		end();
 		}
   
-	include XOOPS_ROOT_PATH.'/header.php';
-  
+	//include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
+	  
 	// Get file information
 	$query  = "SELECT obj_name from ".$dmsdb->prefix("dms_objects")." ";
 	$query .= "WHERE obj_id='".dms_get_var("obj_id")."'";  
@@ -111,6 +112,8 @@ else
 	print "<input type='hidden' name='hdn_return_url' value='".$return_url."'>\r";
 	print "</form>\r";
   
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	//include_once XOOPS_ROOT_PATH.'/footer.php';
+	include 'inc_pal_footer.php';
+	
 	}
 ?>

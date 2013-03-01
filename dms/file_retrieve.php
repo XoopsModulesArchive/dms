@@ -32,6 +32,26 @@
 include '../../mainfile.php';
 include_once 'inc_dms_functions.php';
 
+
+function file_ext_exists($filename)
+	{
+	$position = strrpos($filename,'.');
+	if($position===FALSE)
+		{
+		return FALSE;
+		}
+	else
+		{
+		$ext = substr($filename,$position+1);
+		
+		if (strlen($ext) == 3) return TRUE;
+		else return FALSE;
+		}
+	
+	return FALSE;
+	}
+	
+
 // Permissions required to access this page:
 //  READONLY, EDIT, OWNER
 
@@ -104,6 +124,8 @@ switch($function)
 		dms_get_rep_file_props($obj_id);
 		$cd = "inline";
 		//$cd = "attachment";
+		
+		dms_view_counter_increment($obj_id);
 		break;
 	case "VV":
 		dms_auditing($obj_id,"document/view version/version_row_id=".$ver_id);
@@ -119,6 +141,8 @@ switch($function)
 		$dms_rep_file_props['file_path'] = $dms_config['doc_path']."/".$result->file_path;
 		
 		$cd = "inline";
+		
+		dms_view_counter_increment($obj_id);
 		break;
 	}
 
@@ -127,19 +151,24 @@ dms_doc_history($obj_id);
 
 	
 	
-// The following is for compatibility with documents migrated by the DMS migration program.
-// If a document $dms_rep_file_props['file_name'] does not have an extension, one will have to be added based upon
-// the $dms_rep_file_props['file_type']
-if(!strrchr($dms_rep_file_props['file_name'],".")) 
+// The following is for compatibility with documents migrated by the DMS migration program and for documents without extensions in the filename.
+if(file_ext_exists($dms_rep_file_props['file_name']) == FALSE)
   $dms_rep_file_props['file_name'] = dms_filename_plus_ext($dms_rep_file_props['file_name'],$dms_rep_file_props['file_type']);
 
-/*
+
+
+// If a document $dms_rep_file_props['file_name'] does not have an extension, one will have to be added based upon
+// the $dms_rep_file_props['file_type']
+//if(!strrchr($dms_rep_file_props['file_name'],".")) 
+//  $dms_rep_file_props['file_name'] = dms_filename_plus_ext($dms_rep_file_props['file_name'],$dms_rep_file_props['file_type']);
+
+
 // Debugging
-print "N:  ".$dms_rep_file_props['file_name']."<BR>\r";
-print "S:  ".$dms_rep_file_props['file_size']."<BR>\r";
-print "T:  ".$dms_rep_file_props['file_type']."<BR>\r";
-print "P:  ".$dms_rep_file_props['file_path']."<BR>\r";
-*/
+//print "N:  ".$dms_rep_file_props['file_name']."<BR>\r";
+//print "S:  ".$dms_rep_file_props['file_size']."<BR>\r";
+//print "T:  ".$dms_rep_file_props['file_type']."<BR>\r";
+//print "P:  ".$dms_rep_file_props['file_path']."<BR>\r";
+
 
 // send headers to browser to initiate file download
 header('Content-Length: '.$dms_rep_file_props['file_size']);

@@ -262,7 +262,7 @@ else
 	print "  <td colspan='2' align='left'><input type=button name='btn_submit' value='Import' onclick='check_for_dest();'>";
 	print "                               <input type=button name='btn_cancel' value='" . _DMS_CANCEL . "' onclick='location=\"index.php\";'></td>\r";
 	print "</table>\r";
-	print "<input type='hidden' name='hdn_file_dir_import' value='confim'>\r";
+	print "<input type='hidden' name='hdn_file_dir_import' value='confirm'>\r";
 	print "</form>\r";
 
 	include_once XOOPS_ROOT_PATH.'/footer.php';

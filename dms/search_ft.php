@@ -23,24 +23,161 @@ Suggestions for enhancements are welcome.
 include '../../mainfile.php';
 
 include_once 'inc_dms_functions.php';
-include XOOPS_ROOT_PATH.'/header.php';
+include_once 'inc_search_summary.php';
+//include XOOPS_ROOT_PATH.'/header.php';
+include 'inc_pal_header.php';
 
- 
-//$search_query = $HTTP_POST_VARS['txt_search_query'];
+
+
 $search_query = dms_get_var("txt_search_query");
+if($search_query == FALSE) $search_query = dms_get_var("search_query");
+if($search_query == FALSE) $search_query = "";
 
-if ($dms_admin_flag == 1) 
-  {
-  $admin_flag = 1;
-  }
-else 
-  {
-  $admin_flag = 0;
-  }
+$last_query = dms_get_var("hdn_last_query");
+if($last_query == FALSE) $last_query = dms_get_var("last_query");
+//if($last_query != FALSE) $last_query = stripslashes($last_query);
+
+$page = dms_get_var("page");
+
+//if($page == FALSE) print "<BR>FALSE";
+//print "<BR>LQ=".$last_query;
+//print "<BR>SQ=".$search_query;
+
+if( ( ($last_query != $search_query) || (strlen($search_query) < 2) ) && ($page == FALSE) ) dms_clear_search_results();
+
+
+
+
+
+function dms_clear_search_results()
+	{
+//print "<BR>CLEAR<BR>";
+	$_SESSION['dms_search_results'] = "";
+	}
+
+function dms_display_search_results($page = 1)
+	{
+	global $dms_config, $search_query, $last_query;
+
+	$table_header_flag = FALSE; 
+	$disp_nff_flag = TRUE;
+
+	$results_per_page = $dms_config['search_results_per_page'];
+	$total_number_pages = ceil($_SESSION['dms_search_results']['total_results']/$results_per_page);
+
+	$start = $results_per_page * $page - $results_per_page;
+	$end = $results_per_page * $page - 1;
+	if($end >= $_SESSION['dms_search_results']['total_results']) $end = $_SESSION['dms_search_results']['total_results'] - 1;
+
+//print "<BR>S:  ".$start;
+//print "<BR>E:  ".$end;
+
+	for($i = $start; $i <= $end; $i++)
+		{
+		$disp_nff_flag = FALSE;
+
+		if ($table_header_flag == FALSE)
+			{
+			$table_header_flag = TRUE;
+
+			if($_SESSION['dms_search_results']['total_results'] > $results_per_page)
+				{
+				print "  <tr>\r";
+				print "    <td colspan='2'></td>\r";
+				print "    <td colspan='2' align='right'>";
+
+				print "Page:&nbsp;&nbsp;";
+
+				for($p_index = 1; $p_index <= $total_number_pages; $p_index++)
+					{
+					if($p_index == $page)
+						{
+						print "&nbsp;<b>".$p_index."</b>&nbsp;";
+						}
+					else
+						{
+						print "&nbsp;<a href='?page=".$p_index."&search_query=".$search_query."&last_query=".$last_query."'>".$p_index."</a>&nbsp;";
+						}
+					}
+
+				print "    </td>\r";
+				print "  </tr>\r";
+				}
+
+
+			print "  <tr>\r";
+			print "    <td width='75%' colspan='2' align='left'><b>Document(s):</b></td>\r";
+			print "    <td align='left'><b>Version:</b></td>\r";
+			print "    <td align='left'><b>Relevance:</b></td>\r";
+			print "  </tr>\r";
+			}
+
+		print "  <tr>\r";
+		print "    <td align='left' colspan='2'>  <!-- ".$_SESSION['dms_search_results']['obj_id'][$i]." -->\r";
+		print "      <a href='#' onclick='javascript:void(window.open(\"file_options.php?obj_id=".$_SESSION['dms_search_results']['obj_id'][$i]."\"))'>".$_SESSION['dms_search_results']['obj_name'][$i]."</a>\r";
+		print "    </td>\r";
+		
+		print "    <td align='left'>\r";
+		print "   ".$_SESSION['dms_search_results']['version'][$i];
+		print "    </td>\r";
+		
+		print "    <td align='left'>\r";
+		print "   ".$_SESSION['dms_search_results']['relevance'][$i]."%";
+		print "    </td>\r";
+		
+		print "  </tr>\r";
+
+		if($dms_config['search_summary_flag'] == 1)
+			{
+			print "  <tr>\r";
+			print "    <td width='5%'>&nbsp;</td>\r";
+			print "    <td align='left'>";
+
+			if(strlen($_SESSION['dms_search_results']['summary'][$i]) < 2);
+				{
+				$_SESSION['dms_search_results']['summary'][$i] 
+					= dms_search_summary($_SESSION['dms_search_results']['path_and_file'][$i],
+					$_SESSION['dms_search_results']['summary_query'][$i]);
+				}
+
+			print $_SESSION['dms_search_results']['summary'][$i];
+
+			print "    </td>\r";
+			print "    <td colspan='2'></td>\r";
+			print "  </tr>\r";
+			}
+		}
+
+	if ($disp_nff_flag == TRUE) print "<tr><td colspan='2'><b>No files have been found that match your query.</b><br></td></tr>"; 
+	}
+
+function dms_store_search_results($obj_id,$obj_name,$version,$relevance,$full_path_and_file,$summary_query)
+	{
+//print "<BR>STORE<BR>";
+
+	if(isset($_SESSION['dms_search_results']['total_results']))
+		{
+		$index = $_SESSION['dms_search_results']['total_results'];
+		}
+	else
+		{
+		$_SESSION['dms_search_results']['total_results'] = 0;
+		$index = 0;
+		}
+
+	$_SESSION['dms_search_results']['obj_id'][$index] = $obj_id;
+	$_SESSION['dms_search_results']['obj_name'][$index] = $obj_name;
+	$_SESSION['dms_search_results']['version'][$index] = $version;
+	$_SESSION['dms_search_results']['relevance'][$index] = $relevance;
+	$_SESSION['dms_search_results']['summary'][$index] = "";
+	$_SESSION['dms_search_results']['path_and_file'][$index] = $full_path_and_file;
+	$_SESSION['dms_search_results']['summary_query'][$index] = $summary_query;
+
+	$_SESSION['dms_search_results']['total_results']++;
+	}
+
 
 print "<table width='100%'>\r";
-  
-//  display_dms_header();
   
 print "  <tr>\r";
   
@@ -50,34 +187,47 @@ print "      <table width='100%'>\r";
 display_dms_header(1);
 print "      </table>\r";
   
-print "      <BR>\r";
-
-
-
-print "<table width='100%'>\r";
-
-print "  <tr>\r";
-print "    <td width='100%' ".$dms_config['class_subheader'].">\r";
-print "      Full Text Search\r";
-print "    </td>\r";
-print "  </tr>\r";
-
-print "  <tr>\r";
-print "    <td align='left'>\r";
-
-print "      <br>\r";
-//begin search box
+print "      <table width='100%'>\r";
 print "      <form name='frm_ft_search' method='post' action='search_ft.php'>\r"; 
-$search_query = stripslashes($search_query); 
-print "        <input type='text' name='txt_search_query' value='".$search_query."' size='60' maxlength='250' ".$dms_config['class_content'].">\r";
-print "        <BR><BR>\r";  
-print "        <input type='submit' name='btn_search' value='Search' ".$dms_config['class_content'].">\r"; 
-print "        <input type='button' name='btn_exit' value='Exit' onclick='location=\"index.php\"'>\r";
-print "      </form>\r"; 
+print "        <tr>\r";
+print "          <td width='100%' ".$dms_config['class_content']." align='left'>\r";
+print "            <b>Full Text Search:</b>\r";
+print "          </td>\r";
+print "        </tr>\r";
+
+print "        <tr>\r";
+print "          <td align='left'>\r";
+
+print "            <br>\r";
+//begin search box
+//print "            <form name='frm_ft_search' method='post' action='search_ft.php'>\r"; 
+$search_query = stripslashes($search_query);
+$last_query = stripslashes($last_query);
+print "              <input type='text' name='txt_search_query' value='".$search_query."' size='60' maxlength='250' ".$dms_config['class_content'].">\r";
+print "              <BR><BR>\r";  
+print "              <input type='submit' name='btn_search' value='Search' ".$dms_config['class_content'].">\r"; 
+print "              <input type='button' name='btn_exit' value='Exit' onclick='location=\"index.php\"'>\r";
+print "              <input type='hidden' name='hdn_last_query' value='".$search_query."'>";
+//print "            </form>\r"; 
 // end search box 
 
-if(strlen($search_query) > 2) 
+print "<BR><BR>\r";
+
+print "            <table>\r";
+
+//print "<BR>".$page;
+if( ( (strlen($search_query) > 2) && ($last_query != $search_query) ) && ($page == FALSE) ) 
 	{
+//print "<BR>SEARCH!";
+	// Get the first word in $search_query and use it for the $summary_query.
+	$summary_query = str_replace("\""," ",$search_query);
+	$summary_query = trim($summary_query);
+	$summary_query_e = explode(" ",$summary_query);
+	$summary_query = trim($summary_query_e[0]);
+	$summary_query = rtrim($summary_query,"*");
+
+//print "<BR>SQ:  ".$summary_query;
+
 	// Get the location of the document repository (the index files are located in the root)
 	$repository_root = $dms_config['doc_path'];
 	$repository_root_strlen = strlen($dms_config['doc_path']);
@@ -87,7 +237,7 @@ if(strlen($search_query) > 2)
 
 	// Get the search_limit to limit the search to X number of entries
 	$search_limit = $dms_config['search_limit'];
-
+//print "<BR>Query:  ".$search_query;
 	$search_query = EscapeShellCmd($search_query);                          // escape potentially malicious shell commands 
 	$search_query = stripslashes($search_query);                            // remove backslashes from search query 
 	$search_query = ereg_replace('("|\')', '', $search_query);              // remove quotes from search query  
@@ -111,28 +261,9 @@ if(strlen($search_query) > 2)
 		} 
 
 	$num_results = ereg_replace('# Number of hits: ','',$num_line);		/* strip out all but the number of hits */ 
-
-	/*
-	if ($search_query) 
-		{ 
-		if ($num_results > 0) 
-			{ 
-			if ($num_results == 1) 
-				{
-				$result_case = "result";
-				}
-			else
-				{
-				$result_case = "results";
-				} 
-			}
-		}
-	*/
 		
-	$table_header_flag = FALSE; 
-	$disp_nff_flag = TRUE;
-
-	print "<table>\r";
+	//$table_header_flag = FALSE; 
+	//$disp_nff_flag = TRUE;
 
 	while ($line = @fgets($pp, 4096))
 		{
@@ -146,25 +277,14 @@ if(strlen($search_query) > 2)
 			$line = ereg_replace("[[:blank:]]", "\t", $line);              /* replace every space with a tab */ 
 			list ( $relevance, $result_url, $result_title, $file_size ) = explode("\t", $line);  /* split the line into an array by tabs; assign variable names to each column */ 
 			$relevance = $relevance/10;                                    /* format relevance as a percentage for search results */ 
-			//$result_title = ereg_replace('%%',' ', $result_title);         /* replace every %% with a space */ 
-			//$result_title = ereg_replace('"','', $result_title);           /* strip out the quotation marks */ 
-			//$url = parse_url($result_url);                                 /* split the URL into an array of its components */ 
-			//$link = $url["path"];                                          /* assign the web link to the path component to return a relative URL */ 
-			//if (preg_match("/\/$/", $link)) { $link = "$link" . "index.php"; }/* if the URL ends in "/", we need to append "index.php" (if index.php is the DirectoryIndex file) to grab the appropriate description for the index page--YOU MAY NEED TO CHANGE THIS */ 
-			//$page_requested = "$DOCUMENT_ROOT" . "$link";                  /* return the full path of the file on the web server */ 
-			//$description = "grep -i description $page_requested";          /* return the meta description information */ 
-			//$description = ereg_replace('<meta.name="description".content="', '', $description);  /* strip out the tag open */ 
-			//$description = ereg_replace('\">', '', $description);          /* strip out the tag close */ 
-			//if ($url["query"]) /* if the URL contains a query string, append the URL with that query string */ 
-			//	{
-			//	$link = $link . "?" . $url["query"];
-			//	}  
 
+			$full_path_and_file = $result_url;
 			$result_url = trim(substr( $result_url, ($repository_root_strlen - 1), strlen($result_url) ) );
+			$file_path = strright($result_url, (strlen($result_url)-2) );
 
 			$query    = "SELECT * ";
 			$query   .= "FROM ".$dmsdb->prefix("dms_object_versions")." ";
-			$query   .= "WHERE file_path='".strright($result_url, (strlen($result_url)-2) )."'";  
+			$query   .= "WHERE file_path='".$file_path."'";  
 			$ver_info = $dmsdb->query($query,'ROW');
 
 			$query    = "SELECT * ";
@@ -175,25 +295,13 @@ if(strlen($search_query) > 2)
 				{
 				// Permissions required to view this object:
 				//  BROWSE, READONLY, EDIT, OWNER
-				if($admin_flag == 0) $perms_level = dms_perms_level($obj_info->obj_id);
+				if($dms_admin_flag == 0) $perms_level = dms_perms_level($obj_info->obj_id);
 				else $perms_level = 4;
 
 				if ($obj_info->obj_status < 2)
 					{ 
 					if ( ($perms_level == 1) || ($perms_level == 2) || ($perms_level == 3) || ($perms_level == 4) )
 						{
-						$disp_nff_flag = FALSE;
-
-						if ($table_header_flag == FALSE)
-							{
-							$table_header_flag = TRUE;
-							print "  <tr>\r";
-							print "    <td width='75%'><b>Document(s):</b></td>\r";
-							print "    <td><b>Version:</b></td>\r";
-							print "    <td><b>Relevance:</b></td>\r";
-							print "  </tr>\r";
-							}
-
 						$misc_text = $obj_info->misc_text;
 						if (strlen($misc_text) >0)
 							{
@@ -201,43 +309,34 @@ if(strlen($search_query) > 2)
 							}
 						else $misc_text = "";
 							
-						print "  <tr>\r";
-						print "    <td align='left'>  <!-- ".$obj_info->obj_id." -->\r";
-						print "      <a href='#' onclick='javascript:void(window.open(\"file_options.php?obj_id=".$obj_info->obj_id."\"))'>".$obj_info->obj_name.$misc_text."</a>\r";
-						print "    </td>\r";
-						
-						print "    <td>\r";
-						print "   ".$ver_info->major_version.".".$ver_info->minor_version."".$ver_info->sub_minor_version;
-						print "    </td>\r";
-						
-						print "    <td>\r";
-						print "   ".$relevance."%";
-						print "    </td>\r";
-						
-						print "  </tr>\r";
+						$store_obj_id = $obj_info->obj_id;
+						$store_obj_name = $obj_info->obj_name.$misc_text;
+						$store_version_num = $ver_info->major_version.".".$ver_info->minor_version."".$ver_info->sub_minor_version;
+						$store_relevance = $relevance;
+						dms_store_search_results($store_obj_id,$store_obj_name,$store_version_num,$relevance,$full_path_and_file,$summary_query);
 						}
 					}
 				}
 			} 
 		} 
-
-	if ($disp_nff_flag == TRUE) print "<tr><td colspan='2'><b>No files have been found that match your query.</b><br></td></tr>"; 
-
-	print "</table>\r";
-
 	pclose($pp);		/* close the shell pipe */ 
 	}
 
+if($page == FALSE) $page = 1;
+if(strlen($search_query) > 2) dms_display_search_results($page);
+
+print "            </table>\r";
 print "          </td>\r";
 print "        </tr>\r";
+print "      </form>\r";
 print "      </table>\r";
-
 
 print "    </td>\r";
 print "  </tr>\r";
 print "</table>\r";
-	 
-include_once XOOPS_ROOT_PATH.'/footer.php';
+
+include 'inc_pal_footer.php';
+
 ?> 
  
  

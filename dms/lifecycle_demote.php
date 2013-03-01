@@ -32,66 +32,84 @@ include_once 'inc_lifecycle_functions.php';
 
 // Determine which web page to return to.
 $return_url = "";
-if ($HTTP_GET_VARS["return_url"])      $return_url = $HTTP_GET_VARS["return_url"];
-if ($HTTP_POST_VARS["hdn_return_url"]) $return_url = $HTTP_POST_VARS["hdn_return_url"];
-if (strlen($return_url) <= 1)          $return_url = "index.php"; 
+if (dms_get_var("return_url") != FALSE )     $return_url = dms_get_var("return_url");
+if (dms_get_var("hdn_return_url") != FALSE)  $return_url = dms_get_var("hdn_return_url");
+if (strlen($return_url) <= 1)                $return_url = "index.php"; 
 
-if($HTTP_POST_VARS["hdn_function"]) 
+if(dms_get_var("hdn_function") != FALSE) 
 	{
-	$function = $HTTP_POST_VARS["hdn_function"];
-	$file_id = $HTTP_POST_VARS["hdn_file_id"];
+	$function = dms_get_var("hdn_function");
+	$file_id = dms_get_var("hdn_file_id");
 	}
 else 
 	{
-	$file_id = $HTTP_GET_VARS["obj_id"];
+	$file_id = dms_get_var("obj_id");
 	}
 
 if ($function == "DEMOTE")
 	{
-	$new_lifecycle_stage = $HTTP_POST_VARS['slct_demote_lc_stage'];
+	$new_lifecycle_stage = dms_get_var("slct_demote_lc_stage");
 	
-	// get current lifecycle info
-	$query  = "SELECT obj_owner, lifecycle_id, lifecycle_stage ";
-	$query .= "FROM ".$dmsdb->prefix('dms_objects')." ";
-	$query .= "WHERE obj_id='".$file_id."' ";
-	$result = $dmsdb->query($query,'ROW');
-	
-	$current_lifecycle_id = $result->lifecycle_id;
-	$current_lifecycle_stage = $result->lifecycle_stage;
-	$current_object_location = $result->obj_owner;
-		
-	$query  = "SELECT lifecycle_stage, lifecycle_stage_name, new_obj_location ";
-	$query .= "FROM ".$dmsdb->prefix('dms_lifecycle_stages')." ";
-	$query .= "WHERE lifecycle_id='".$current_lifecycle_id."' AND ";
-	$query .= "lifecycle_stage='".$new_lifecycle_stage."'";
-	$result = $dmsdb->query($query,"ROW");
+	if($new_lifecycle_stage == '0')
+		{
+		// remove lifecycle info from dms_objects
+		$query  = "UPDATE ".$dmsdb->prefix('dms_objects')." ";
+		$query .= "SET ";
+		$query .= "lifecycle_id='0', ";
+		$query .= "lifecycle_stage='0', ";
+		$query .= "misc_text='' ";
+		$query .= "WHERE obj_id='".$file_id."'";
+		$dmsdb->query($query);
 
-	// Update the file properties.
-	$query  = "UPDATE ".$dmsdb->prefix('dms_objects')." ";
-	$query .= "SET ";
-	$query .= "obj_owner='".$result->new_obj_location."', ";
-	$query .= "lifecycle_id='".$current_lifecycle_id."', ";
-	$query .= "lifecycle_stage='".$new_lifecycle_stage."' ";
-	$query .= "WHERE obj_id='".$file_id."'";
-	//print $query;
+		dms_auditing($file_id,"document/lifecycle/remove");
+		
+		dms_message("The document has been removed from the lifecycle.");
+		}
+	else
+		{
+		// get current lifecycle info
+		$query  = "SELECT obj_owner, lifecycle_id, lifecycle_stage ";
+		$query .= "FROM ".$dmsdb->prefix('dms_objects')." ";
+		$query .= "WHERE obj_id='".$file_id."' ";
+		$result = $dmsdb->query($query,'ROW');
+		
+		$current_lifecycle_id = $result->lifecycle_id;
+		$current_lifecycle_stage = $result->lifecycle_stage;
+		$current_object_location = $result->obj_owner;
+			
+		$query  = "SELECT lifecycle_stage, lifecycle_stage_name, new_obj_location ";
+		$query .= "FROM ".$dmsdb->prefix('dms_lifecycle_stages')." ";
+		$query .= "WHERE lifecycle_id='".$current_lifecycle_id."' AND ";
+		$query .= "lifecycle_stage='".$new_lifecycle_stage."'";
+		$result = $dmsdb->query($query,"ROW");
 	
-	$dmsdb->query($query);
-	
-	dms_update_misc_text($file_id);
-	
-	dms_set_lifecycle_stage_perms($file_id,$current_lifecycle_id,$new_lifecycle_stage);
-	
-	dms_alpha_move($file_id);
-	
-	dms_auditing($file_id,"document/lifecycle/demote id=".$current_lifecycle_id.",dest folder=".$new_obj_location);
-	
-	dms_message("The document has been demoted to a previous lifecycle stage.");
-	
-	//header("Location:index.php");
-	
-	// Return to the options screen
-	//header("Location:file_options.php?obj_id=".$file_id);
-	
+		// Update the file properties.
+		$query  = "UPDATE ".$dmsdb->prefix('dms_objects')." ";
+		$query .= "SET ";
+		$query .= "obj_owner='".$result->new_obj_location."', ";
+		$query .= "lifecycle_id='".$current_lifecycle_id."', ";
+		$query .= "lifecycle_stage='".$new_lifecycle_stage."' ";
+		$query .= "WHERE obj_id='".$file_id."'";
+		//print $query;
+		
+		$dmsdb->query($query);
+		
+		dms_update_misc_text($file_id);
+		
+		dms_set_lifecycle_stage_perms($file_id,$current_lifecycle_id,$new_lifecycle_stage);
+		
+		dms_alpha_move($file_id);
+		
+		dms_auditing($file_id,"document/lifecycle/demote id=".$current_lifecycle_id.",dest folder=".$new_obj_location);
+		
+		dms_message("The document has been demoted to a previous lifecycle stage.");
+		
+		//header("Location:index.php");
+		
+		// Return to the options screen
+		//header("Location:file_options.php?obj_id=".$file_id);
+		}
+
 	dms_header_redirect("file_options.php?obj_id=".$file_id);
 	}
 else
@@ -124,7 +142,7 @@ else
 	
 	print "  <tr>\r";
 	print "    <td colspan='2' align='left'>\r";
-	print "      Demote this document to:<BR>\r";
+	print "      Demote this document to the following stage or remove this document from the lifecycle:<BR>\r";
 	dms_display_spaces(5);
 	print "      <select name='slct_demote_lc_stage'>\r";
 	
@@ -140,12 +158,13 @@ else
 			print "        <option value='".$result_data['lifecycle_stage']."'>".$result_data['lifecycle_stage_name']."</option>\r";
 		}
 		
+	print "        <option value='0'>Remove</option>\r";
 	print "      </select>\r";
 	print "    </td>\r";
 	print "  </tr>\r";
 		
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
-	print "  <td colspan='2' align='left'><input type=submit name='btn_submit' value='Demote'>";
+	print "  <td colspan='2' align='left'><input type=submit name='btn_submit' value='Apply'>";
 	print "                               <input type=button name='btn_cancel' value='Cancel' onclick='location=\"index.php\";'></td>\r";
 	print "</table>\r";
 	print "<input type='hidden' name='hdn_function' value='DEMOTE'>\r";

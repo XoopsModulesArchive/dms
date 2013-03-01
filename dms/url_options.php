@@ -62,7 +62,8 @@ if (dms_get_var("hdn_update_options") == "confirm" )
 	}
 else
 	{
-	include XOOPS_ROOT_PATH.'/header.php';
+	//include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
 	
 	// Get object information
 	$query  = "SELECT obj_status, obj_type, obj_name from ".$dmsdb->prefix("dms_objects")." ";
@@ -92,7 +93,7 @@ else
 	print "<script language='JavaScript'>\r";
 	print "<!--\r";
 	print "currentX = -1;\r";
-	print "function grabMouseX(e) {\r";
+	print "function uo_grabMouseX(e) {\r";
 	print "  if ((DOM && !IE4) || Opera5) {\r";
 	print "    currentX = e.clientX;\r";
 	print "    } else if (NS4) {\r";
@@ -115,26 +116,26 @@ else
 	print "<script type='text/javascript'>\r";
 	print "<!--\r";
 	
-	print "function popUpMenu() {\r";
-	print "shutdown();\r";
+	print "function uo_popUpMenu() {\r";
+	print "uo_shutdown();\r";
 	print "setleft('div_menu',currentX);\r";
 	print "popUp(\"div_menu\",true);\r";
 	print "}\r";
 	
-	print "function moveLayers() {\r";
-	print "grabMouseX;\r";
+	print "function uo_moveLayers() {\r";
+	print "uo_grabMouseX;\r";
 	print "setleft('div_menu',currentX);\r";
 	print "settop('div_menu',currentY);\r";
 	print "}\r";
 	
-	print "function shutdown() {\r";
+	print "function uo_shutdown() {\r";
 	print "popUp('div_menu',false);\r";
 	print "}\r";
 	
 	print "if (NS4) {\r";
-	print "document.onmousedown = function() { shutdown(); }\r";
+	print "document.onmousedown = function() { uo_shutdown(); }\r";
 	print "} else {\r";
-	print "document.onclick = function() { shutdown(); }\r";
+	print "document.onclick = function() { uo_shutdown(); }\r";
 	print "}\r";
 	
 	print "// -->\r";
@@ -155,12 +156,13 @@ else
 		}
 	else
 		{
-		//print "<a href='folder_move.php?obj_id=".$obj_id."'>Move Folder</a><BR>\r";
+		print "<a href='url_copy.php?obj_id=".$obj_id."'>Copy</a>&nbsp;\r";
+		print "<a href='url_move.php?obj_id=".$obj_id."'>Move</a>&nbsp;\r";
 		print "<a href='obj_delete.php?obj_id=".$obj_id."'>Delete</a><BR>\r";
 		}
 		
 	print "  <BR>";
-	print "  <a href='#' onmouseover='shutdown();'>[Close]</a>\r";
+	print "  <a href='#' onmouseover='uo_shutdown();'>[Close]</a>\r";
 	
 	print "</td></tr>\r";
 	/*
@@ -174,7 +176,7 @@ else
 	
 	print "<script language='JavaScript'>\r";
 	print "<!--\r";
-	print "moveLayers();\r";
+	print "uo_moveLayers();\r";
 	print "loaded = 1;\r";
 	print "// -->\r";
 	print "</script>\r";
@@ -200,7 +202,7 @@ else
 	
 	if($perms_level == OWNER || $dms_admin_flag == 1)
 		{
-		print "          <input type='button' name='btn_options' value='"._DMS_OPTIONS."' onmouseover='grabMouseX(event); moveLayerY(\"div_menu\", currentY, event); popUpMenu();'>&nbsp;&nbsp;";
+		print "          <input type='button' name='btn_options' value='"._DMS_OPTIONS."' onmouseover='uo_grabMouseX(event); moveLayerY(\"div_menu\", currentY, event); uo_popUpMenu();'>&nbsp;&nbsp;";
 		}
 			
 	// Permissions Button
@@ -289,7 +291,8 @@ else
 	print "  </tr>\r";
 	print "</table>\r";
 	
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	//include_once XOOPS_ROOT_PATH.'/footer.php';
+	include 'inc_pal_footer.php';
 	}
 
 dms_show_mb();

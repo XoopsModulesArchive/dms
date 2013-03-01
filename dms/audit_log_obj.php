@@ -50,6 +50,9 @@ if($HTTP_GET_VARS["query_start"]) $query_start = $HTTP_GET_VARS["query_start"];
 if($query_start > 0) $query_limit_clause = " LIMIT ".$query_start.",".$query_limit;
 else $query_limit_clause = " LIMIT ".$query_limit;
 
+// Get all of the users and their id's
+$user_list = array();
+$user_list = $dms_users->list_all();
 
 include XOOPS_ROOT_PATH.'/header.php';
    
@@ -104,7 +107,12 @@ print "      <table>\r";
 print "        <tr><td align='left'>\r";  
   
 if($result->obj_type == FILE) print "          <b>" . _DMS_DOC_NAME . "</b>  ".$result->obj_name."\r";
-else                       print "          <b>" . _DMS_FOLDER_NAME . "</b>  ".$result->obj_name."\r";
+else
+	{
+	print "          <b>" . _DMS_FOLDER_NAME . "</b>  ".$result->obj_name."\r";
+	print "<BR>\r";
+	print "<input type='button' value='Sub-folder Report' onclick='location=\"audit_log_tree.php?obj_id=".$obj_id."\";'>\r";
+	}
   
 print "        </td></tr>\r";
   
@@ -131,8 +139,8 @@ print "          <td align='left' ".$class_content.">\r";
 print "            <b>" . _DMS_DATE_AND_TIME . "</b>\r";
 print "          </td>\r";
  
-print "          <td align='left' width='10%' ".$class_content.">\r";
-print "            <b>" . _DMS_USER_ID . "</b>\r";
+print "          <td align='left' ".$class_content.">\r";
+print "            <b>User Name</b>\r";
 print "          </td>\r";
     
 print "          <td align='left' ".$class_content.">\r";
@@ -145,14 +153,14 @@ $result_counter = 0;
 while($result_data = $dmsdb->getarray($result))
 	{
 	print "        <tr>\r";
-	print "          <td align='left' ".$class_content.">\r";
+	print "          <td align='left' ".$class_content." width='25%'>\r";
 	print "            <a href=\"audit_log_detail.php?row_id=".$result_data['row_id']."\">".strftime("%d-%B-%Y %I:%M%p",$result_data['time_stamp'])."</a>\r";
 	print "          </td>\r";
 
-	print "          <td align='left' ".$class_content.">\r";
-	print "            <a href='audit_log_user.php?user_id=".$result_data['user_id']."'>".$result_data['user_id']."</a>\r";
+	print "          <td align='left' ".$class_content." width='25%'>\r";
+	print "            <a href='audit_log_user.php?user_id=".$result_data['user_id']."'>".$user_list[$result_data['user_id']]."</a>\r";
 	print "          </td>\r";
-    
+
 	print "          <td align='left' ".$class_content.">\r";
 	print "            ".$result_data['descript']."\r";
 	print "          </td>\r";

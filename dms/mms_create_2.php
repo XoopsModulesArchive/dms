@@ -28,7 +28,7 @@
 // mms_create.php
 
 include '../../mainfile.php';
-include_once 'defines.php';
+//include_once 'defines.php';
 include_once 'inc_dms_functions.php';
 include_once 'inc_dest_path_and_file.php';
 include_once 'inc_file_properties.php';
@@ -97,7 +97,8 @@ $mms_id=$dms_var_cache['mms_create_mmsid'];
 	
 	print "  <table width='100%'>\r";
 	print "  <form method='post' name='frm_mms_create' action='mms_create_3.php'>\r";
-	display_dms_header(2);
+	//display_dms_header(2);
+	dms_display_header(2,"","",FALSE);
 
 	if($dms_var_cache['mms_create_function'] == "CREATE") $title = "Create Document:";
 	else $title = "Import Document:";
@@ -107,10 +108,10 @@ $mms_id=$dms_var_cache['mms_create_mmsid'];
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
 	
 	print "  <tr>\r";
-	print "    <td colspan='2' align='left' class='".$dms_config['class_content']."'>\r";  
+	print "    <td colspan='2' align='left' ".$dms_config['class_content'].">\r";  
 	print "      Name:  ".$dms_var_cache['mms_create_obj_name'];
 //	print "      "._DMS_FILE_NAME."  ";
-//	print "      <input type='text' name='txt_obj_name' size='40' maxlength='250' class='".$dms_config['class_content']."' tabindex='".$dms_tab_index++."'>\r";
+//	print "      <input type='text' name='txt_obj_name' size='40' maxlength='250' ".$dms_config['class_content']." tabindex='".$dms_tab_index++."'>\r";
 	print "    </td>\r";
 	print "  </tr>\r";
 	
@@ -139,9 +140,9 @@ $mms_id=$dms_var_cache['mms_create_mmsid'];
 	
 	print "</form>\r";
 	
-	print("<SCRIPT LANGUAGE='Javascript'>\r");
-	print("  document.frm_mms_create.txt_obj_name.focus();");
-	print("</SCRIPT>");
+//	print("<SCRIPT LANGUAGE='Javascript'>\r");
+//	print("  document.frm_mms_create.txt_obj_name.focus();");
+//	print("</SCRIPT>");
 	
 	include_once XOOPS_ROOT_PATH.'/footer.php';
 	

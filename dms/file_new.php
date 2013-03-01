@@ -121,6 +121,10 @@ if (dms_get_var("hdn_file_new") == "confirm")
 	// Add all additional document properties
 	//update_file_properties($obj_id);
 
+	$file_type = $source_file_info->file_type;
+	//if($dms_config['OS']=="Linux") $file_type = trim(exec('file -bi '. escapeshellarg($dest_path_and_file)));
+	
+	
 	// Create an entry in dms_object_versions and store the appropriate information.
 	$query  = "INSERT INTO ".$dmsdb->prefix('dms_object_versions')." (obj_id,file_path,file_name,file_type,file_size,";
 	$query .= "major_version,minor_version,sub_minor_version,init_version_flag,time_stamp)";
@@ -129,7 +133,7 @@ if (dms_get_var("hdn_file_new") == "confirm")
 	$query .= $partial_path_and_file."','";
 	//$query .= $source_file_info->file_name."','";
 	$query .= $file_name."','";
-	$query .= $source_file_info->file_type."','";
+	$query .= $file_type."','";
 	$query .= $source_file_info->file_size."','";
 	$query .= "1"."','";
 	$query .= "0"."','";
@@ -182,7 +186,8 @@ if (dms_get_var("hdn_file_new") == "confirm")
 	}
 else
 	{
-	include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
+	
 	$location="file_new.php";  
 	
 	// Get active folder
@@ -251,7 +256,7 @@ else
 	print("  document.frm_select_template.txt_obj_name.focus();");
 	print("</SCRIPT>");
 	
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	include_once 'inc_pal_footer.php';
 	}
 ?>
 

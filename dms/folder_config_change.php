@@ -82,6 +82,7 @@ if (dms_get_var("hdn_obj_id") != FALSE)
 	$flags = 0;
 	if(dms_get_var("chk_folder_archive_flag") == 'on') $flags += 1;
 	if(dms_get_var("chk_doc_name_sync_flag") == 'on') $flags += 2;
+	if(dms_get_var("chk_disp_file_comments_flag") == 'on') $flags += 4;
 		
 	if($flags > 0)
 		{

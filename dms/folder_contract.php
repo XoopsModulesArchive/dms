@@ -29,6 +29,11 @@
 include '../../mainfile.php';
 include_once 'inc_dms_functions.php';
 
+print "FOLDER_CONTRACT.PHP";
+print "Please Contact Your Administrator";
+exit(0);
+
+
 //if ($HTTP_GET_VARS["ret_location"]) $location = $HTTP_GET_VARS["ret_location"];
 //else $location="index.php";
 
@@ -48,7 +53,7 @@ else $change_active_folder = "TRUE";
 
 $folder_id = dms_get_var("folder_id");
 if ($folder_id != FALSE)
-{
+	{
 	$query  = "DELETE FROM ".$dmsdb->prefix("dms_exp_folders");
 	$query .= " WHERE user_id='".$dms_user_id."' and folder_id='".$folder_id."'";
 	$dmsdb->query($query);
@@ -62,7 +67,11 @@ if ($folder_id != FALSE)
 		$query .= "WHERE user_id='".$dms_user_id."' and folder_id='".$folder_id."'";
 		$dmsdb->query($query);
 		}
-} 
+	} 
+
+$dms_var_cache['doc_alpha_sort'] = "ALL";
+dms_var_cache_save();
+
 
 //header("Location:".$location);
 

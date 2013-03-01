@@ -69,47 +69,47 @@ if (dms_get_var("hdn_checkout_cancel_confirm") == "confirm")
 	exit(0);
 	}
 else
-  {
-  // Permissions required to access this page:
-  //  EDIT, OWNER
-  $perms_level = dms_perms_level(dms_get_var('obj_id'));
-
-  if ( ($perms_level != 3) && ($perms_level != 4) )
-    {
-    print("<SCRIPT LANGUAGE='Javascript'>\r");
-    print("location='index.php';");
-    print("</SCRIPT>");  
-    end();
-    }
-    
-  include XOOPS_ROOT_PATH.'/header.php';
-  
-  // Get file information
-  $query  = "SELECT obj_name from ".$xoopsDB->prefix("dms_objects")." ";
-  $query .= "WHERE obj_id='".dms_get_var("obj_id")."'";  
-  $doc_name = $dmsdb->query($query,'obj_name');
-
-  print "<form method='post' action='file_checkout_cancel.php'>\r";
-  print "<table width='100%'>\r";
-  //print "  <tr><td colspan='2' class='cHeader'><center><b><font size='2'>Title Goes Here</font></b></center></td></tr>\r";
-  display_dms_header();
-  
-  print "  <tr><td colspan='2'><BR></td></tr>\r";
-  print "  <tr><td colspan='2' align='left'><b>" . _DMS_CONFIRM_CANCEL_CHECKOUT . "</b></td></tr>\r";
-  print "  <tr><td colspan='2'><BR></td></tr>\r";
-  print "  <tr>\r";
-  print "    <td colspan='2' align='left'>" . _DMS_FILE_NAME . "&nbsp;&nbsp;&nbsp;";
-  print "        ".$doc_name."</td>\r";
-  print "  </tr>\r";
-  print "  <tr><td colspan='2'><BR></td></tr>\r";
-  print "  <td colspan='2' align='left'><input type=submit name='btn_submit' value='" . _DMS_CANCEL_CHECKOUT . "'>";
-  print "                               <input type=button name='btn_cancel' value='" . _DMS_CANCEL . "' onclick='location=\"".$return_url."\";'></td>\r";
-  print "</table>\r";
-  print "<input type='hidden' name='hdn_checkout_cancel_confirm' value='confirm'>\r";
-  print "<input type='hidden' name='hdn_file_id' value='".dms_get_var("obj_id")."'>\r";
-  print "<input type='hidden' name='hdn_return_url' value='".$return_url."'>\r";
-  print "</form>\r";
-  
-  include_once XOOPS_ROOT_PATH.'/footer.php';
-  }
+	{
+	// Permissions required to access this page:
+	//  EDIT, OWNER
+	$perms_level = dms_perms_level(dms_get_var('obj_id'));
+	
+	if ( ($perms_level != 3) && ($perms_level != 4) )
+		{
+		print("<SCRIPT LANGUAGE='Javascript'>\r");
+		print("location='index.php';");
+		print("</SCRIPT>");  
+		end();
+		}
+	
+	include 'inc_pal_header.php';
+	
+	// Get file information
+	$query  = "SELECT obj_name from ".$xoopsDB->prefix("dms_objects")." ";
+	$query .= "WHERE obj_id='".dms_get_var("obj_id")."'";  
+	$doc_name = $dmsdb->query($query,'obj_name');
+	
+	print "<form method='post' action='file_checkout_cancel.php'>\r";
+	print "<table width='100%'>\r";
+	//print "  <tr><td colspan='2' class='cHeader'><center><b><font size='2'>Title Goes Here</font></b></center></td></tr>\r";
+	display_dms_header();
+	
+	print "  <tr><td colspan='2'><BR></td></tr>\r";
+	print "  <tr><td colspan='2' align='left'><b>" . _DMS_CONFIRM_CANCEL_CHECKOUT . "</b></td></tr>\r";
+	print "  <tr><td colspan='2'><BR></td></tr>\r";
+	print "  <tr>\r";
+	print "    <td colspan='2' align='left'>" . _DMS_FILE_NAME . "&nbsp;&nbsp;&nbsp;";
+	print "        ".$doc_name."</td>\r";
+	print "  </tr>\r";
+	print "  <tr><td colspan='2'><BR></td></tr>\r";
+	print "  <td colspan='2' align='left'><input type=submit name='btn_submit' value='" . _DMS_CANCEL_CHECKOUT . "'>";
+	print "                               <input type=button name='btn_cancel' value='" . _DMS_CANCEL . "' onclick='location=\"".$return_url."\";'></td>\r";
+	print "</table>\r";
+	print "<input type='hidden' name='hdn_checkout_cancel_confirm' value='confirm'>\r";
+	print "<input type='hidden' name='hdn_file_id' value='".dms_get_var("obj_id")."'>\r";
+	print "<input type='hidden' name='hdn_return_url' value='".$return_url."'>\r";
+	print "</form>\r";
+	
+	include 'inc_pal_footer.php';
+	}
 ?>

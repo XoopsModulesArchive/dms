@@ -91,6 +91,10 @@ if (dms_get_var("hdn_update_form") == "TRUE")
 	$query = "UPDATE ".$dmsdb->prefix("dms_config")." SET data = '".dms_get_var("slct_purge_delay")."' WHERE name='purge_delay'";
 	$dmsdb->query($query);
 	
+	//  Document Expiration System
+	$query = "UPDATE ".$dmsdb->prefix('dms_config')." SET data = '".dms_get_var_chk("chk_doc_expiration_enable")."' WHERE name='doc_expiration_enable'";
+	$dmsdb->query($query);
+
 	//  Document Properties
 	
 	for ($index = 0; $index < 10; $index++)
@@ -198,7 +202,11 @@ if (dms_get_var("hdn_update_form") == "TRUE")
 	$query  = "UPDATE ".$dmsdb->prefix("dms_config")." SET data = '".dms_get_var('txt_doc_display_limit')."' ";
 	$query .= "WHERE name='doc_display_limit'";
 	$dmsdb->query($query);
-	
+/*
+	$query  = "UPDATE ".$dmsdb->prefix('dms_config')." SET data = '".dms_get_var_chk('chk_disp_main_int_options')."' ";
+	$query .= "WHERE name='disp_main_int_options'";
+	$dmsdb->query($query);
+*/
 	$query  = "UPDATE ".$dmsdb->prefix('dms_config')." SET data = '".dms_get_var_chk('chk_misc_text_disp_template')."' ";
 	$query .= "WHERE name='misc_text_disp_template'";
 	$dmsdb->query($query);
@@ -308,7 +316,23 @@ if (dms_get_var("hdn_update_form") == "TRUE")
 	$query  = "UPDATE ".$dmsdb->prefix('dms_config')." SET data = '".dms_get_var_chk("chk_full_text_search_cdo")."' ";
 	$query .= "WHERE name='full_text_search_cdo'";
 	$dmsdb->query($query);
-	
+
+	$query  = "UPDATE ".$dmsdb->prefix("dms_config")." SET data = '".dms_get_var("txt_search_results_per_page")."' ";
+	$query .= "WHERE name='search_results_per_page'";
+	$dmsdb->query($query);
+
+	$query  = "UPDATE ".$dmsdb->prefix('dms_config')." SET data = '".dms_get_var_chk("chk_search_summary_flag")."' ";
+	$query .= "WHERE name='search_summary_flag'";
+	$dmsdb->query($query);
+
+	$query  = "UPDATE ".$dmsdb->prefix("dms_config")." SET data = '".dms_get_var("txt_search_summary_c_before")."' ";
+	$query .= "WHERE name='search_summary_c_before'";
+	$dmsdb->query($query);
+
+	$query  = "UPDATE ".$dmsdb->prefix("dms_config")." SET data = '".dms_get_var("txt_search_summary_c_after")."' ";
+	$query .= "WHERE name='search_summary_c_after'";
+	$dmsdb->query($query);
+
 	dms_update_config_time_stamp();
 	}
 
@@ -493,6 +517,19 @@ dms_get_config();
 	print "</select>\r";
 	print "<BR><BR><BR>\r";
 	
+	//  Document Expiration System
+	dms_display_spaces(5);
+	printf("Document Expiration System:<BR><BR>\r");
+	
+	$checked = $dms_config['doc_expiration_enable'];
+	if ($checked == '0') $checked = "";
+	else $checked = " checked";
+
+	dms_display_spaces(10);
+	print "Enable:  ";
+	print "<input type='checkbox' name='chk_doc_expiration_enable' ".$checked.">\r";
+	print "<BR><BR><BR>\r";
+	
 	//  Document Properties
 	
 	dms_display_spaces(5);
@@ -673,6 +710,7 @@ dms_get_config();
 	print "Default User Interface:  ";
 	print "<select name='slct_default_interface'>\r";
 	print "  <option value='2' ".$selected[2].">Single Directory</option>\r";
+	print "  <option value='4' ".$selected[4].">Development</option>\r";
 	print "</select>\r";
 	
 	print "<BR>\r";
@@ -684,6 +722,17 @@ dms_get_config();
 	dms_display_spaces(10);
 	printf("Documents Displayed per Page:  ");
 	printf("<input type=text name='txt_doc_display_limit' value='%s' size='4'><BR>",$dms_config['doc_display_limit']);
+	
+/*
+	$checked = $dms_config['disp_main_int_options'];
+	if ($checked == '0') $checked = "";
+	else $checked = " checked";
+
+	dms_display_spaces(10);
+	print "Display Title and Function Bar on Main Screen:  ";
+	print "<input type='checkbox' name='chk_disp_main_int_options' ".$checked.">\r";
+*/
+//	print "<BR>\r";
 	
 	$checked = $dms_config['misc_text_disp_template'];
 	if ($checked == '0') $checked = "";
@@ -898,7 +947,11 @@ dms_get_config();
 	
 	dms_display_spaces(10);
 	print "Search Limit:  ";
-	printf("<input type=text name='txt_search_limit' value='%s' size='5' maxlength='5'><BR><BR>\r",$dms_config['search_limit']);
+	printf("<input type=text name='txt_search_limit' value='%s' size='5' maxlength='5'><BR>\r",$dms_config['search_limit']);
+
+	dms_display_spaces(10);
+	print "Documents Per Page:  ";
+	printf("<input type=text name='txt_search_results_per_page' value='%s' size='5' maxlength='5'><BR><BR>\r",$dms_config['search_results_per_page']);
 	
 	dms_display_spaces(10);
 	print "Full Text Search:<BR>\r";
@@ -930,8 +983,27 @@ dms_get_config();
 		dms_display_spaces(15);
 		print "<input type='button' value='Write Configuration Files' onclick='location=\"config_write_swishe_config.php\";'>\r";
 		}
+
+	print "<BR><BR>";
 	
-	print "<BR><BR><BR>\r";
+	dms_display_spaces(10);
+	print "Search Summaries:<BR>\r";
+	
+	$checked = $dms_config['search_summary_flag'];
+	if ($checked == '0') $checked = "";
+	else $checked = " checked";
+
+	dms_display_spaces(15);
+	print "Enable:  ";
+	print "<input type='checkbox' name='chk_search_summary_flag' ".$checked."><BR>\r";
+
+	dms_display_spaces(15);
+	print "Characters Before Search Term:  ";
+	printf("<input type=text name='txt_search_summary_c_before' value='%s' size='5' maxlength='5'><BR>\r",$dms_config['search_summary_c_before']);
+
+	dms_display_spaces(15);
+	print "Characters After Search Term:  ";
+	printf("<input type=text name='txt_search_summary_c_after' value='%s' size='5' maxlength='5'><BR>\r",$dms_config['search_summary_c_after']);
 	
 	//  Update and Exit Buttons
 	print "<BR><BR><BR>\r";

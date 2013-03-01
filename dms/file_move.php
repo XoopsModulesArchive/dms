@@ -33,11 +33,9 @@ include_once 'inc_lifecycle_functions.php';
 
 if (dms_get_var("hdn_file_move") == "confirm")
 	{
-	//$obj_id = $HTTP_POST_VARS['hdn_file_id'];
 	$obj_id = dms_get_var("hdn_file_id");
-	//$dest_folder_id = $HTTP_POST_VARS['rad_folder_id'];
-	$dest_folder_id = dms_get_var("rad_folder_id");
-	
+	$dest_folder_id = dms_get_var("rad_selected_obj_id");
+
 	$location = "file_options.php?obj_id=".$obj_id;
 	
 	$query  = "UPDATE ".$dmsdb->prefix('dms_objects')." ";
@@ -66,7 +64,8 @@ if (dms_get_var("hdn_file_move") == "confirm")
 	}
 else
 	{
-	include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
+	include_once 'inc_obj_select.php';
 	
 //	if ($HTTP_POST_VARS["hdn_obj_id"]) $obj_id = $HTTP_POST_VARS['hdn_obj_id'];
 //	else $obj_id = $HTTP_GET_VARS['obj_id'];
@@ -78,12 +77,12 @@ else
 	$perms_level = dms_perms_level($obj_id);
 	
 	if ( ($perms_level != 3) && ($perms_level != 4) )
-	{
-	print("<SCRIPT LANGUAGE='Javascript'>\r");
-	print("location='index.php';");
-	print("</SCRIPT>");  
-	end();
-	}
+		{
+		print("<SCRIPT LANGUAGE='Javascript'>\r");
+		print("location='index.php';");
+		print("</SCRIPT>");  
+		end();
+		}
 	
 	$location="file_move.php";
 		
@@ -93,8 +92,9 @@ else
 	$doc_name = $dmsdb->query($query,'obj_name');
 	
 	print "  <table width='100%'>\r";
-	print "  <form method='post' name='frm_select_dest' action='file_move.php'>\r";
-	display_dms_header(2);
+	print "  <form method='post' name='frm_select_obj' action='file_move.php'>\r";
+
+	dms_display_header(2,"","",FALSE);
 	
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
 	print "  <tr><td colspan='2' align='left'><b>" . _DMS_MOVE_FILE . "</b></td></tr>\r";
@@ -108,14 +108,14 @@ else
 	print "  <tr>\r";
 	print "    <td colspan='2' align='left'>\r";
 	
-	include "inc_folder_select.php";
-	
+	dms_select_object_id(SELECT_FOLDER,$obj_id);
+
 	print "    </td>\r";
 	print "  </tr>\r";
 	
 	print "  <tr><td colspan='2'><BR></td></tr>\r";
 	
-	print "  <td colspan='2' align='left'><input type=button name='btn_submit' value='" . _DMS_MOVE . "' onclick='check_for_dest();'>";
+	print "  <td colspan='2' align='left'><input type=button name='btn_submit' value='" . _DMS_MOVE . "' onclick='obj_select_check_for_dest();'>";
 	print "                               <input type=button name='btn_cancel' value='" . _DMS_CANCEL . "' onclick='location=\"file_options.php?obj_id=".$obj_id."\";'></td>\r";
 	print "</table>\r";
 	print "<input type='hidden' name='hdn_file_move' value='confirm'>\r";
@@ -123,7 +123,7 @@ else
 	print "<input type='hidden' name='hdn_destination_folder_id' value=''>\r";
 	print "</form>\r";
 	
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	include_once 'inc_pal_footer.php';
 	}
 ?>
 

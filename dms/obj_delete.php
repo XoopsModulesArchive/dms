@@ -49,6 +49,22 @@ function dms_delete_file($obj_id)
 
 	dms_folder_subscriptions($obj_id);
 	}
+
+function dms_delete_file_link($obj_id)
+	{
+	global $dmsdb;
+
+	$query  = "DELETE FROM ".$dmsdb->prefix("dms_objects")." ";
+	$query .= "WHERE obj_id=".$obj_id;
+	$dmsdb->query($query);
+	
+	$query  = "DELETE FROM ".$dmsdb->prefix("dms_object_perms")." ";
+	$query .= "WHERE ptr_obj_id=".$obj_id;
+	$dmsdb->query($query);
+
+	$query = "DELETE FROM ".$dmsdb->prefix("dms_object_properties")." WHERE obj_id='".$obj_id."'";
+	$dmsdb->query($query);
+	}
 	
 function dms_delete_folder($obj_id)
 	{
@@ -104,6 +120,22 @@ function dms_delete_folder($obj_id)
 		}
 	}
 	
+function dms_delete_folder_link($obj_id)
+	{
+	global $dmsdb;
+
+	$query  = "DELETE FROM ".$dmsdb->prefix("dms_objects")." ";
+	$query .= "WHERE obj_id=".$obj_id;
+	$dmsdb->query($query);
+
+	$query  = "DELETE FROM ".$dmsdb->prefix("dms_object_perms")." ";
+	$query .= "WHERE ptr_obj_id=".$obj_id;
+	$dmsdb->query($query);
+
+	$query = "DELETE FROM ".$dmsdb->prefix("dms_object_properties")." WHERE obj_id='".$obj_id."'";
+	$dmsdb->query($query);
+	}
+
 function dms_delete_url($obj_id)
 	{
 	global $dms_config,$dmsdb,$dms_user_id;
@@ -163,7 +195,7 @@ if ( ($perms_level != EDIT) && ($perms_level != OWNER) )
 	{
 	print("<SCRIPT LANGUAGE='Javascript'>\r");
 	print("location='index.php';");
-	print("</SCRIPT>");  
+	print("</SCRIPT>");
 	end();
 	}
 
@@ -194,11 +226,23 @@ switch($obj_info->obj_type)
 		$return_url = "file_options.php";
 		$audit_string = "document/delete";
 		break;
+	case FILELINK:
+		$confirm_string = "Document Link";
+		$confirm_name = "Document Name";
+		$return_url = "file_link_options.php";
+		$audit_string = "document link/delete";
+		break;
 	case FOLDER:
 		$confirm_string = "Folder";
 		$confirm_name = "Folder name";
 		$return_url = "folder_options.php";
 		$audit_string = "folder/delete";
+		break;
+	case FOLDERLINK:
+		$confirm_string = "Folder Link";
+		$confirm_name = "Folder link name";
+		$return_url = "folder_link_options.php";
+		$audit_string = "folder_link/delete";
 		break;
 	case DOCLINK:
 		$confirm_string = "Routed Document";
@@ -219,7 +263,9 @@ if (dms_get_var("hdn_delete_object_confirm") == "confirm")
 	switch($obj_info->obj_type)
 		{
 		case FILE:		dms_delete_file($obj_id);		break;
+		case FILELINK:		dms_delete_file_link($obj_id);		break;
 		case FOLDER:		dms_delete_folder($obj_id);		break;
+		case FOLDERLINK:	dms_delete_folder_link($obj_id);	break;
 		case WEBPAGE:		dms_delete_url($obj_id);		break;
 		case DOCLINK:		dms_delete_link($obj_id);		break;
 		}
@@ -232,7 +278,7 @@ if (dms_get_var("hdn_delete_object_confirm") == "confirm")
 	}
 else
 	{
-	include XOOPS_ROOT_PATH.'/header.php';
+	include 'inc_pal_header.php';
 
 	print "<form method='post' action='obj_delete.php'>\r";
 	print "<table width='100%'>\r";
@@ -254,6 +300,6 @@ else
 	print "<input type='hidden' name='hdn_obj_id' value='".$obj_id."'>\r";
 	print "</form>\r";
    
-	include_once XOOPS_ROOT_PATH.'/footer.php';
+	include 'inc_pal_footer.php';
 	}
 ?>

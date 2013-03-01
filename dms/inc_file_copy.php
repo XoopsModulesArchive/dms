@@ -82,6 +82,8 @@ function dms_file_copy($obj_id, $dest_obj_owner)
 		}
 	else
 		{
+		$source_obj_id = $obj_id;
+		
 		$partial_path_and_file = dest_path_and_file();
 		
 		// Get the location of the document repository
@@ -126,18 +128,42 @@ function dms_file_copy($obj_id, $dest_obj_owner)
 		// Get the obj_id of the new object
 		$obj_id = $dmsdb->getid();
 		
-		// Store the owner permissions in dms_object_perms  
-		$query  = "INSERT INTO ".$dmsdb->prefix('dms_object_perms')." ";
-		$query .= "(ptr_obj_id,user_id, group_id, user_perms, group_perms, everyone_perms) VALUES ('";
-		$query .= $obj_id."','";
-		$query .= $dms_user_id."','";
-		$query .= "0','";
-		$query .= "4','";
-		$query .= "0','";
-		$query .= "0')";
 		
-		$dmsdb->query($query);
 		
+		
+		// Copy all of the document permissions.
+		if( ($dms_config['inherit_perms'] == 1) && ($dest_obj_owner > 0) )
+			{
+			// Use the permissions inherited from the destination folder
+			$perms_source = $dest_obj_owner;
+			}
+		else
+			{
+			// Use the permissions copied from the original document
+			$perms_source = $source_obj_id;
+			}
+		
+		$query = "SELECT * from ".$dmsdb->prefix('dms_object_perms')." WHERE ptr_obj_id='".$source_obj_id."'";
+		$result = $dmsdb->query($query);
+		$num_rows = $dmsdb->getnumrows();
+		
+		if($num_rows > 0)
+			{
+			while($result_data = $dmsdb->getarray($result))
+				{
+				$query  = "INSERT INTO ".$dmsdb->prefix('dms_object_perms')." ";
+				$query .= "(ptr_obj_id,user_id, group_id, user_perms, group_perms, everyone_perms) VALUES ('";
+				$query .= $obj_id."','";
+				$query .= $result_data['user_id']."','";
+				$query .= $result_data['group_id']."','";
+				$query .= $result_data['user_perms']."','";
+				$query .= $result_data['group_perms']."','";
+				$query .= $result_data['everyone_perms']."')";
+
+				$dmsdb->query($query);
+				}
+			}
+
 		// Create an entry in dms_object_properties and store additional properties information.
 		$query  = "INSERT INTO ".$dmsdb->prefix('dms_object_properties')." ";
 		$query .= " VALUES (";

@@ -102,9 +102,8 @@ function set_perms($folder_id)
   
 $index = 0;
 
-$folder_id = $HTTP_POST_VARS["hdn_obj_id"];  
-
-//print ":2:";
+//$folder_id = $HTTP_POST_VARS["hdn_obj_id"];  
+$folder_id = dms_get_var("hdn_obj_id");
 
 // Get array of permissions for current folder.
 $query  = "SELECT * FROM ".$dmsdb->prefix("dms_object_perms")." ";
@@ -113,15 +112,15 @@ $query .= "WHERE ptr_obj_id='".$folder_id."' ";
 $result = $dmsdb->query($query);
 
 while($result_data = $dmsdb->getarray($result))
-  {
-  $perms [$index]["user_id"]         = $result_data["user_id"];
-  $perms [$index]["group_id"]        = $result_data["group_id"];  
-  $perms [$index]["user_perms"]      = $result_data["user_perms"];  
-  $perms [$index]["group_perms"]     = $result_data["group_perms"];  
-  $perms [$index]["everyone_perms"]  = $result_data["everyone_perms"];  
-  
-  $index++;  
-  }      
+	{
+	$perms [$index]["user_id"]         = $result_data["user_id"];
+	$perms [$index]["group_id"]        = $result_data["group_id"];  
+	$perms [$index]["user_perms"]      = $result_data["user_perms"];  
+	$perms [$index]["group_perms"]     = $result_data["group_perms"];  
+	$perms [$index]["everyone_perms"]  = $result_data["everyone_perms"];  
+	
+	$index++;  
+	}      
       
 // Propagate permissions to lower sub-dirs.
 propagate_perms($folder_id);

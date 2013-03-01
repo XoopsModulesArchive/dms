@@ -2,7 +2,7 @@
 //  ------------------------------------------------------------------------ //
 //                     Document Management System                            //
 //                  Written By:  Brian E. Reifsnyder                         //
-//                        Copyright 6/24/2003                                //
+//                        Copyright 11/19/2008                               //
 // ------------------------------------------------------------------------- //
 //  This program is free software; you can redistribute it and/or modify     //
 //  it under the terms of the GNU General Public License as published by     //
@@ -42,6 +42,9 @@ $dms_anon_flag = "";
 $dms_user_id = "";
 $dms_disp_flag = "TRUE";
 
+$active_folder = 0;
+$active_folder_type = 0;
+$active_folder_perms = 0;
 
 $class_content = "";
 $class_header = "";
@@ -53,6 +56,12 @@ $dms_tab_index = 1;
 dms_get_config();
 dms_var_cache_load();
 dms_document_deletion();
+dms_get_user_data();
+
+//dms_admin_menu();
+//dms_search_menu();
+//dms_dhtml_menu_functions();
+
 
 $dms_groups->group_source = $dms_config['group_source'];
 
@@ -151,7 +160,7 @@ function dms_auditing($obj_id, $descript, $obj_name = "")
 	$dmsdb->query($query);
 }
 
-function dms_display_header($number_of_columns=3,$pre_options="",$post_options="")
+function dms_display_header($number_of_columns=3,$pre_options="",$post_options="",$dmio = TRUE)
 	{
 	global $dms_config;
 	
@@ -165,9 +174,11 @@ function dms_display_header($number_of_columns=3,$pre_options="",$post_options="
 		print "    </tr>\r";
 		print "  </table></td></tr>\r";
 		}
+	
+	//if($dmio == TRUE) dms_display_main_interface_options($number_of_columns);
 	}
 
-function dms_display_document_icon($obj_id,$file_type = 0,$status = 0)
+function dms_display_document_icon($obj_id,$file_type = 0,$status = 0)           // Change this to dms_get_document_icon
 	{
 	global $dmsdb,$file_type_update_counter;
 
@@ -232,13 +243,91 @@ function dms_display_document_icon($obj_id,$file_type = 0,$status = 0)
 		
 	$image = "images/doc_types/".$image;
 	
-	print "<img src='".$image."'>";
+	//print "<img src='".$image."'>";
+	//$image = "<img src='".$image."'>";
 
 	if($update_flag == TRUE)
 		{
 		$query = "UPDATE ".$dmsdb->prefix("dms_objects")." SET file_type='".$file_type."' WHERE obj_id='".$obj_id."'";
 		$dmsdb->query($query);
 		}
+
+	return $image;
+	}
+
+function dms_display_main_interface_options($number_of_columns = 3)
+	{
+	global $active_folder_type, $active_folder, $active_folder_perms, $dms_admin_flag, $dms_config;
+
+	//if($dms_config['disp_main_int_options'] == 0) return;
+	
+	//print "  <tr><td colspan='3'><BR></td></tr>\r";
+	
+	print "  <tr><td colspan='".$number_of_columns."'><table width='100%'>\r";
+	
+	print "  <tr>\r";
+	//print "    <td width='60%'><img src='images/help.gif' title='Help'><BR></td>\r";
+	print "    <td width='40%' style='text-align: left;'>";
+	dms_help_system("index",3);
+	print "    </td>\r";
+	
+	if( ( ($active_folder_type == FOLDER) 
+	&& ( ( ($active_folder!=0) && ( ($active_folder_perms == EDIT) || ($active_folder_perms == OWNER) ) ) ) 
+	&& ($active_folder_type != DISKDIR) )
+	|| ( ($active_folder == 0) && ($dms_admin_flag == 1) )
+	)
+		{
+		print "  <td width='35%' align='right' valign='top'>";
+	
+		if ($dms_config['template_root_obj_id'] != 0)
+			print "    <a href='file_new.php'><img src='images/menu/filenew.gif' title='Create Document'></a>&nbsp;&nbsp;";
+	
+		print "    <a href='file_import.php'><img src='images/menu/fileimport.gif' title='Import Document'></a>&nbsp;&nbsp;";
+
+		if ($dms_config['OS'] == "Linux") 
+			{
+			print "    <a href='file_batch_import.php' title='Import Multiple Documents'><img src='images/menu/batchimport.gif'></a>&nbsp;&nbsp;";
+			}
+
+		print "    <a href='url_add.php'><img src='images/menu/www.gif' title='Add Web Page'></a>&nbsp;&nbsp;";
+		print "    <a href='folder_new.php'><img src='images/menu/foldernew.gif' title='Create Folder'></a>";
+		
+		if( ($dms_admin_flag == 1) && ($dms_admin_flag == 0) )  // Disabled.     *******************************************
+			{
+			print "    &nbsp;&nbsp;<a href='link_create.php'><img src='images/link_create.gif' title='Create Link'></a>";
+			}
+
+		print "  </td>\r";
+		}
+	else
+		{
+		print "    <td width='25%' align='left'><BR></td>";
+		}
+
+	//print "    <td width='25%' align='right' valign='top'><a href='search_prop.php'><img src='images/menu/filefind.gif' title ='Search'></a>&nbsp;&nbsp;";
+
+
+	if ($dms_config['full_text_search'] == '1')
+		{
+		print "    <td width='25%' align='right' valign='top'><a href='#' onmouseover='grabMouseX(event); moveLayerY(\"div_menu_search\", currentY, event); popUpSearchMenu();'><img src='images/menu/filefind.gif' title='Search'></a>&nbsp;&nbsp;";
+		}
+	else 
+		{
+		print "    <td width='25%' align='right' valign='top'><a href='search_prop.php'><img src='images/menu/filefind.gif' title ='Search'></a>&nbsp;&nbsp;";
+		}
+
+
+	if ($dms_admin_flag == 1) 
+		{
+		print "<a href='#' onmouseover='grabMouseX(event); moveLayerY(\"div_menu_admin\", currentY, event); popUpAdminMenu();'><img src='images/menu/configure.gif'></a";
+		}
+	
+	print "      </td></tr>\r";
+	
+	print "    </table></td></tr>\r";
+	
+	//print "    <tr><td></td></tr>\r";
+	//print "  <tr><td colspan='3' align='left'><a href='folder_close_all.php'>" . _DMS_CLOSE_ALL_FOLDERS  . "</a></td></tr>\r";
 	}
 
 function dms_display_spaces($number_of_spaces=1)
@@ -786,8 +875,42 @@ function dms_get_rep_file_props($file_id)
 	$dms_rep_file_props['file_size'] = $second_result->file_size;
 	$dms_rep_file_props['file_path'] = $dms_config['doc_path']."/".$second_result->file_path;
 
+	// If the OS is Linux, get the mime type directly.
+	//if($dms_config['OS']=="Linux") $dms_rep_file_props['file_type'] = trim(exec('file -bi '. escapeshellarg($dms_rep_file_props['file_path'])));
+	
 	return($dms_rep_file_props);
 }
+
+
+function dms_get_user_data()
+	{
+	global $active_folder, $active_folder_type, $active_folder_perms, $admin_display, $template_root_folder, $dms_admin_flag, $dmsdb;
+	
+	// Get active folder
+	$active_folder = dms_active_folder();
+	$active_folder_perms = dms_perms_level($active_folder);
+	
+	// Get the object type of the active folder, if applicable
+	if ($active_folder!=0)
+		{
+		$query = "SELECT obj_type from ".$dmsdb->prefix("dms_objects")." WHERE obj_id='".$active_folder."'";
+		$active_folder_type = $dmsdb->query($query,'obj_type');
+		}
+	else
+		{
+		$active_folder_type = 0;
+		}
+	
+	// If the user is an Admin, get the admin_display value
+	if ($dms_admin_flag == 1)
+		{
+		$admin_display = $dms_config['admin_display'];
+		}
+	else 
+		{
+		$admin_display = '0';
+		}
+	}
 
 
 // Get a variable that has been POSTed or is in the query string (GET).  Return the contents of the variable.
@@ -878,7 +1001,7 @@ function dms_help_system($id,$control=1)
 	}
 
 function dms_inbox_id($user_id)
-{
+	{
 	global $dmsdb;
 	
 	// Get Destination Inbox obj_id (this will be the object_owner of the new object)
@@ -896,7 +1019,8 @@ function dms_inbox_id($user_id)
 	$inbox_obj_id = $dmsdb->query($query,'obj_id');
 	if($dmsdb->getnumrows() == 0) $inbox_obj_id = 0; 
 	return $inbox_obj_id;
-}
+	}
+
 
 /*
 function dms_javascript_clock()
@@ -905,6 +1029,11 @@ function dms_javascript_clock()
 
 }
 */
+
+function dms_inc_functions_test()
+	{
+	print "inc_dms_functions.php loaded<BR>\r";
+	}
 
 function dms_message($message)
 {
@@ -1221,7 +1350,7 @@ function dms_select_version_number($select_box_naming = 'slct_version',$major_nu
 	print "</select>\r";  
 }
 
-function dms_send_email($to="", $from="", $subject="", $message_text="", $attachment_obj_id=0)
+function dms_send_email($to="", $from="", $subject="", $message_text="", $attachment_obj_id=0, $uploaded_file_data=0 )
 {
 	global $dms_rep_file_props;
 	
@@ -1236,6 +1365,16 @@ function dms_send_email($to="", $from="", $subject="", $message_text="", $attach
 		$data = chunk_split(base64_encode($data));
 		}
 	
+	// If there is an uploaded file, get the file information...if there is an $attachment_obj_id, ignore this
+	if( ($attachment_obj_id == 0) && ($uploaded_file_data != 0) )
+		{
+		$file = fopen($uploaded_file_data['path'],'rb');
+		$data = fread($file,filesize($uploaded_file_data['path']));
+		fclose($file);
+
+		$data = chunk_split(base64_encode($data));
+		}
+
 	$mime_boundary = "==Multipart_Boundary_x".md5(mt_rand())."x";
 	
 	$headers  = "To:  ".$to."\n";
@@ -1263,6 +1402,15 @@ function dms_send_email($to="", $from="", $subject="", $message_text="", $attach
 		$message .= $data."\n\n";
 		}
 		
+	if( ($attachment_obj_id == 0) && ($uploaded_file_data != 0) )
+		{
+		$message .= "--".$mime_boundary."\n";
+		$message .= "Content-Type: ".$uploaded_file_data['type'].";\n";
+		$message .= " name=\"".$uploaded_file_data['name']."\"\n";
+		$message .= "Content-Transfer-Encoding: base64\n\n";
+		$message .= $data."\n\n";
+		}
+
 	$message .= "--".$mime_boundary."--\n";
 	mail($to, $subject, $message, $headers);
 }
@@ -1424,7 +1572,7 @@ function dms_var_cache_load()
 }
 
 function dms_var_cache_save()
-{
+	{
 	global $dms_var_cache;
 	
 	// Check to see if the variable cache exists...if not, create it.  
@@ -1437,11 +1585,35 @@ function dms_var_cache_save()
 		{
 		$_SESSION['dms_var_cache'][$key] = $value;
 		}
-}
+	}
 
 function dms_var_cache_set($variable, $value=0)
-{
+	{
 	$dms_var_cache[$variable] = $value;
-}
+	}
 
+function dms_view_counter_increment($obj_id)
+	{
+	global $dmsdb;
+	
+	$query  = "SELECT num_views FROM ".$dmsdb->prefix("dms_objects")." ";
+	$query .= "WHERE obj_id='".$obj_id."'"; 
+	$num_views = $dmsdb->query($query,"num_views");
+	
+	$num_views++;
+	
+	$query  = "UPDATE ".$dmsdb->prefix("dms_objects")." ";
+	$query .= "SET num_views='".$num_views."' WHERE obj_id='".$obj_id."'"; 
+	$dmsdb->query($query);
+	}
+	
+function dms_view_counter_num_views($obj_id)
+	{
+	global $dmsdb;
+	
+	$query  = "SELECT num_views FROM ".$dmsdb->prefix("dms_objects")." ";
+	$query .= "WHERE obj_id='".$obj_id."'"; 
+	$num_views = $dmsdb->query($query,"num_views");
+	return $num_views;
+	}
 ?>

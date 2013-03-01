@@ -42,5 +42,8 @@ $dmsdb->query($query);
 
 //header("Location:".$location);
 
+$dms_var_cache['doc_alpha_sort'] = "ALL";
+dms_var_cache_save();
+
 dms_header_redirect($location);
 ?>

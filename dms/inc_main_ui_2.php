@@ -71,7 +71,7 @@ function display_table_header()
 
 function folder_query($obj_owner, $alpha_sort = "ALL")
 	{
-	global $dmsdb;
+	global $dms_admin_flag,$dmsdb;
 
 	$query  = "SELECT obj_id,o. ptr_obj_id, obj_type, obj_name, obj_status, obj_owner, obj_checked_out_user_id, lifecycle_id, misc_text, ";
 	$query .= "user_id, group_id, user_perms, group_perms, everyone_perms, file_type ";
@@ -80,6 +80,7 @@ function folder_query($obj_owner, $alpha_sort = "ALL")
 	$query .= "ON o.obj_id = op.ptr_obj_id ";
 	$query .= "WHERE obj_owner = '".$obj_owner."' ";
 	if($alpha_sort != "ALL") $query .= "AND obj_name LIKE '".$alpha_sort."%' ";
+	if($dms_admin_flag == 0) $query .= "AND obj_status != '".DELETED."' ";
 	$query .= "ORDER BY obj_name, obj_id"; 
 //print "<BR>".$query."<BR>";
 	return $query;
@@ -143,13 +144,15 @@ function results_sifter($result)
 //				    ($sifted_results['obj_type'][$sr_index] == DOCLINK) )   
 					
 				if( ($sifted_results['obj_type'][$sr_index] == FILE) ||
-					($sifted_results['obj_type'][$sr_index] == DOCLINK) ||
-					($sifted_results['obj_type'][$sr_index] == WEBPAGE) )
+					($sifted_results['obj_type'][$sr_index] == ROUTEDDOC) ||
+					($sifted_results['obj_type'][$sr_index] == WEBPAGE) || 
+					($sifted_results['obj_type'][$sr_index] == FILELINK) )
 					{
 					$xref_doc_index[$sifted_results['num_docs']] = $sr_index;
 					$sifted_results['num_docs']++;
 					}
-				if($sifted_results['obj_type'][$sr_index] == FOLDER)
+				if( ($sifted_results['obj_type'][$sr_index] == FOLDER) ||
+					($sifted_results['obj_type'][$sr_index] == FOLDERLINK) )
 					{
 					$xref_folder_index[$sifted_results['num_folders']] = $sr_index;
 					$sifted_results['num_folders']++; 
@@ -223,13 +226,15 @@ function results_sifter($result)
 		$sifted_results['max_perm'][$sr_index]                = $max_perm;
 		
 		if( ($sifted_results['obj_type'][$sr_index] == FILE) ||
-			($sifted_results['obj_type'][$sr_index] == DOCLINK) ||
-			($sifted_results['obj_type'][$sr_index] == WEBPAGE) )   
+			($sifted_results['obj_type'][$sr_index] == ROUTEDDOC) ||
+			($sifted_results['obj_type'][$sr_index] == WEBPAGE) ||
+   			($sifted_results['obj_type'][$sr_index] == FILELINK) )
 			{
 			$xref_doc_index[$sifted_results['num_docs']] = $sr_index;
 			$sifted_results['num_docs']++;
 			}
-		if($sifted_results['obj_type'][$sr_index] == FOLDER)
+		if( ($sifted_results['obj_type'][$sr_index] == FOLDER) ||
+			($sifted_results['obj_type'][$sr_index] == FOLDERLINK) )
 			{
 			$xref_folder_index[$sifted_results['num_folders']] = $sr_index;
 			$sifted_results['num_folders']++; 
@@ -376,6 +381,7 @@ function list_folders($folder_owner)
 			{
 			// If this object is a folder, examine and possibly display it.
 			if  (($sifted_results['obj_type'][$folder_index] == FOLDER) 
+			  || ($sifted_results['obj_type'][$folder_index] == FOLDERLINK)
 			  || ($sifted_results['obj_type'][$folder_index] == INBOXEMPTY) 
 			  || ($sifted_results['obj_type'][$folder_index] == INBOXFULL) 
 			  || ($sifted_results['obj_type'][$folder_index] == DISKDIR) )
@@ -385,102 +391,83 @@ function list_folders($folder_owner)
 				
 				// Determine permissions
 				$perm = $sifted_results['max_perm'][$folder_index];
-				
-				print "  <tr>\r";
-				$index = 0;
-				$exp_flag = 0;
-/*
-				// Is folder expanded?
-				while($exp_folders[$index] != -1)
-					{ 
-					if ($exp_folders[$index] == $sifted_results['obj_id'][$folder_index]) $exp_flag = 1;
-					$index++;
-					}
-*/
+				if($dms_admin_flag == 1)  $perm = OWNER;
 
-				// Display standard folders
-				if ( ($sifted_results['obj_type'][$folder_index]==FOLDER) || ($sifted_results['obj_type'][$folder_index]==DISKDIR) )
+				print "  <tr>\r";
+				//$index = 0;
+
+				$obj_status = $sifted_results['obj_status'][$folder_index];
+
+				$options_page = "folder_options.php";
+				$folder_id = $sifted_results['obj_id'][$folder_index];
+
+				switch ($sifted_results['obj_type'][$folder_index])
 					{
-					if ($perm > BROWSE)
-						{
-						if ($sifted_results['obj_status'][$folder_index] == DELETED) 
+					case FOLDER:
+						$image = "images/folder_closed.gif";
+						$title = _DMS_OPEN_FOLDER;
+						if($obj_status == DELETED)
 							{
-							print "    <td ".$class." align='left' colspan='2'><a title='" . _DMS_OPEN_DEL_FOLDER  . "' href='folder_expand.php?folder_id=".$sifted_results['obj_id'][$folder_index]."'><img src='images/folder_del_closed.gif'></a>";
+							$image = "images/folder_del_closed.gif";
+							$title = _DMS_OPEN_DEL_FOLDER;
 							}
-						else
+						break;
+					case DISKDIR:
+						$image = "images/folder_closed.gif";
+						$title = _DMS_OPEN_FOLDER;
+						if($obj_status == DELETED)
 							{
-							print "    <td ".$class." align='left' colspan='2'><a title='" . _DMS_OPEN_FOLDER  . "' href='folder_expand.php?folder_id=".$sifted_results['obj_id'][$folder_index]."'><img src='images/folder_closed.gif'></a>";
+							$image = "images/folder_del_closed.gif";
+							$title = _DMS_OPEN_DEL_FOLDER;
 							}
-						}
-					else
-						if ($sifted_results['obj_status'][$folder_index] == DELETED)
+						break;
+					case FOLDERLINK:
+						$image = "images/folder_link.gif";
+						$title = _DMS_OPEN_FOLDER;
+						$options_page = "folder_link_options.php";
+						if($obj_status == DELETED)
 							{
-							print "    <td ".$class." align='left' colspan='2'><img src='images/folder_del_closed.gif'>";
+							$image = "images/folder_link_del.gif";
+							$title = _DMS_OPEN_DEL_FOLDER;
 							}
-						else
-							{
-							print "    <td ".$class." align='left' colspan='2'><img src='images/folder_closed.gif'>";
-							}
-					} 
-		
-				// Display empty inbox folders
-				if ($sifted_results['obj_type'][$folder_index]==INBOXEMPTY)
-					{
-					if (($exp_flag==1) && ($perm > BROWSE)) 
-						{
-						print "    <td ".$class." align='left' colspan='2'><a title='" . _DMS_CLOSE_INBOX_EMPTY  . "' href='folder_contract.php?folder_id=".$sifted_results['obj_id'][$folder_index]."'><img src='images/inbox_empty.gif'></a>\r";
-						}
-					else
-						{
-						if ($perm > BROWSE)
-							print "    <td ".$class." align='left' colspan='2'><a title='" . _DMS_OPEN_INBOX_EMPTY  . "' href='folder_expand.php?folder_id=".$sifted_results['obj_id'][$folder_index]."'><img src='images/inbox_empty.gif'></a>\r";
-						else
-							print "    <td ".$class." align='left' colspan='2'><img src='images/inbox_empty.gif'></a>&nbsp;&nbsp;&nbsp;\r";
-						}
+						$perm = dms_perms_level($sifted_results['ptr_obj_id'][$folder_index]);
+						$folder_id = $sifted_results['ptr_obj_id'][$folder_index];
+						break;
+					case INBOXEMPTY:
+						$image = "images/inbox_empty.gif";
+						$title = _DMS_OPEN_INBOX_EMPTY;
+						break;
+					case INBOXFULL:
+						$image = "images/inbox_full.gif";
+						$title = _DMS_OPEN_INBOX;
+						if($obj_status == DELETED)
+						break;
 					}
-		  
-				// Display full inbox folders
-				if ($sifted_results['obj_type'][$folder_index]==INBOXFULL)
-					{
-					if (($exp_flag==1) && ($perm > BROWSE))
-						{
-						print "    <td ".$class." align='left' colspan='2'><a title='" . _DMS_CLOSE_INBOX  . "' href='folder_contract.php?folder_id=".$sifted_results['obj_id'][$folder_index]."'><img src='images/inbox_full.gif'></a>\r";
-						}
-					else
-						{
-						if ($perm > BROWSE)
-							print "    <td ".$class." align='left' colspan='2'><a title='" . _DMS_OPEN_INBOX  . "' href='folder_expand.php?folder_id=".$sifted_results['obj_id'][$folder_index]."'><img src='images/inbox_full.gif'></a>\r"; 
-						else
-							print "    <td ".$class." align='left' colspan='2'><img src='images/inbox_full.gif'></a>&nbsp;&nbsp;&nbsp;\r";
-						}
-					}  
-				
+
+				if($perm > BROWSE)
+					print "    <td ".$class." align='left' colspan='2'><a title='".$title."' href='folder_expand.php?folder_id=".$folder_id."'><img src='".$image."'></a>";
+				else
+					print "    <td ".$class." align='left' colspan='2'><img src='".$image."'>";
 				
 				print "    </td>\r";
 				
-				
 				if($perm > BROWSE)
-					print "    <td align='left'><a href='folder_expand.php?folder_id=".$sifted_results['obj_id'][$folder_index]."'>".$sifted_results['obj_name'][$folder_index]."</a></td>\r";  
+					print "    <td align='left'><a href='folder_expand.php?folder_id=".$folder_id."'>".$sifted_results['obj_name'][$folder_index]."</a></td>\r";  
 				else
-					print "    <td align='left'>".$sifted_results['obj_name'][$folder_index]."</td>\r";  
-				
+					print "    <td align='left'>".$sifted_results['obj_name'][$folder_index]."</td>\r";
 					
 				print "    <td></td>\r";
 				print "    <td></td>\r";  // Checkin/Checkout (not used for a folder)
 		
 				if ($sifted_results['obj_status'][$folder_index] == DELETED)
-					{
 					print "    <td align=center><a href='obj_restore.php?obj_id=".$sifted_results['obj_id'][$folder_index]."'>" . _DMS_RESTORE  . "</a></td>\r";  // Restore
-					}
 				else  
-					{
-					print "    <td></td>\r";          
-					}
-		  
+					print "    <td></td>\r";
+		
 				if  ( ($perm >= EDIT) 
 				  && ($dms_anon_flag == 0)
 				  && ($sifted_results['obj_status'][$folder_index] != DELETED) )
-					print "    <td align='center'><a href='folder_options.php?obj_id=".$sifted_results['obj_id'][$folder_index]."'>" . _DMS_OPTIONS  . "</a></td>\r";  // Options        
+					print "    <td align='center'><a href='".$options_page."?obj_id=".$sifted_results['obj_id'][$folder_index]."'>" . _DMS_OPTIONS  . "</a></td>\r";  // Options
 				else print "    <td></td>\r";
 		
 				print "  </tr>\r";
@@ -501,7 +488,7 @@ function list_documents($document_owner)
 	global $sifted_results;
 
 	// If this folder is not active, don't do anthing but exit out of this function.
-	if ($document_owner != $active_folder) return(0); 
+	if ($document_owner != $active_folder) return(0);
 	
 	// If this folder is empty, display that it is empty.
 	if( ($sifted_results['num_docs'] == 0) && ($sifted_results['num_folders'] == 0) )
@@ -509,7 +496,7 @@ function list_documents($document_owner)
 		
 	$bg_color="";
 	$bg_image="images/line.gif";
-    
+
 	$num_rows = $sifted_results['num_docs'];
 	$disp_start = $dms_var_cache['doc_display_start'];
 	if($dms_var_cache['doc_display_start'] > $sifted_results['num_docs']) 
@@ -527,7 +514,8 @@ function list_documents($document_owner)
 		$disp = FALSE;
 		
 		if( ($sifted_results['obj_type'][$obj_index] == FILE) ||
-		    ($sifted_results['obj_type'][$obj_index] == DOCLINK) ||
+		    ($sifted_results['obj_type'][$obj_index] == ROUTEDDOC) ||
+		    ($sifted_results['obj_type'][$obj_index] == FILELINK) ||
 		    ($sifted_results['obj_type'][$obj_index] == WEBPAGE) )
 			{
 			$disp_counter++;
@@ -541,206 +529,221 @@ function list_documents($document_owner)
 			}
 		
 		if($sifted_results['obj_id'][$obj_index] <=0) $disp=FALSE;
+		$obj_id = $sifted_results['obj_id'][$obj_index];
 			
 		// Determine Permissions
 		$perm = $sifted_results['max_perm'][$obj_index];
 		
 		$class = "";
+//////////////
+		$flag_enable_checkin = FALSE;
+		$flag_enable_checkout = FALSE;
+		$flag_view_doc = FALSE;
+		$flag_view_name = FALSE;
+		$flag_route_doc = FALSE;
+		$flag_disp_options = TRUE;
+
+		$obj_name = $sifted_results['obj_name'][$obj_index];
+		$obj_status = $sifted_results['obj_status'][$obj_index];
+
+		//  If the object is a routed document, query the routed document.
+		if($sifted_results['obj_type'][$obj_index] == ROUTEDDOC)
+			{
+			$link_query  = "SELECT obj_id,obj_name,obj_status,current_version_row_id,obj_checked_out_user_id ";
+			$link_query .= "from ".$dmsdb->prefix('dms_objects')." ";
+			$link_query .= "WHERE obj_id='".$sifted_results['ptr_obj_id'][$obj_index]."'";
+			$link_result = $dmsdb->query($link_query,"ROW");
+
+			$perm = dms_perms_level($sifted_results['ptr_obj_id'][$obj_index]);
+			$obj_name = $link_result->obj_name;
+			$obj_id = $link_result->obj_id;
+			$obj_status = $link_result->obj_status;
+			}
+
+		//  If the object is a linked document, query the routed document.
+		if($sifted_results['obj_type'][$obj_index] == FILELINK)
+			{
+			$link_query  = "SELECT obj_id,obj_name,obj_status,current_version_row_id,obj_checked_out_user_id ";
+			$link_query .= "from ".$dmsdb->prefix('dms_objects')." ";
+			$link_query .= "WHERE obj_id='".$sifted_results['ptr_obj_id'][$obj_index]."'";
+			$link_result = $dmsdb->query($link_query,"ROW");
+
+			$perm = dms_perms_level($sifted_results['ptr_obj_id'][$obj_index]);
+			//$obj_name = $link_result->obj_name;
+			$obj_id = $link_result->obj_id;
+			$obj_status = $link_result->obj_status;
+			}
+
+		if($dms_admin_flag == 1)  $perm = OWNER;
+
+
+		switch ($perm)
+			{
+			case OWNER:
+			case EDIT:
+				$flag_enable_checkout = TRUE;
+			case READONLY:
+				$flag_view_doc = TRUE;
+				$flag_route_doc = TRUE;
+			case BROWSE:
+				$flag_view_name = TRUE;
+				break;
+			}
+
+		//  Configure the details to display
+		$image = "";
+		$options_url = "";
+		switch($sifted_results['obj_type'][$obj_index])
+			{
+			case FILE:
+				$image = dms_display_document_icon($sifted_results['obj_id'][$obj_index],
+				  $sifted_results['file_type'][$obj_index],
+				  $sifted_results['obj_status'][$obj_index]);
+
+				// If there is text to display in misc_text, display it.
+				$misc_text = $sifted_results['misc_text'][$obj_index];
+				if (strlen($misc_text) >0)
+					$misc_text = "&nbsp;&nbsp;&nbsp;(".$misc_text.")";
+				else 
+					$misc_text = "";
+				$title_image = "";
+				$title_text = "View Document";
+				$options_url = "file_options.php";
+				break;
+			case ROUTEDDOC:
+				// Object is a routed document
+				$image = "images/file_routed.gif";
+				$title_image = _DMS_DOC_AVAILABLE;
+				$title_text = _DMS_VIEW_ROUTED_DOC;
+				if($link_result->obj_status == CHECKEDOUT)
+					{
+					$image = "images/file_routed_locked.gif";
+					$title_text = _DMS_DOC_NOT_AVAILABLE;
+					}
+				$options_url = "link_options.php";
+				break;
+			case FILELINK:
+				$image = "images/doc_types/file_link.png";
+				$title_image = "Linked Document";
+				$title_text = "View Document";
+				$options_url = "file_link_options.php";
+				break;
+			case WEBPAGE:
+				$image = "images/www_open.gif";
+				$title_image = "Open Web Page";
+				$title_text = "Open Web Page";
+				$options_url = "url_options.php";
+			}
+
+		//  Determine whether to allow document checkin/checkout.
+		$check_in_out_href="file_checkout.php";
+
+		$check_in_out_obj_status = $sifted_results['obj_status'][$obj_index];
+		$check_in_out_co_user_id = $sifted_results['obj_checked_out_user_id'][$obj_index];
+		$check_in_out_obj_id = $sifted_results['obj_id'][$obj_index];
+		if( ($sifted_results['obj_type'][$obj_index] == ROUTEDDOC) )
+			{
+			$check_in_out_obj_status = $link_result->obj_status;
+			$check_in_out_co_user_id = $link_result->obj_checked_out_user_id;
+			$check_in_out_obj_id = $link_result->obj_id;
+			}
+
+		if($dms_config['checkinout_enable'] == 0)
+			{
+			$flag_enable_checkout = FALSE;
+			$flag_enable_checkin = FALSE;
+			}
+		else
+			{
+			if ( ($check_in_out_obj_status == CHECKEDOUT)
+			  && ($dms_user_id == $check_in_out_co_user_id)
+			  && ($perm >= EDIT) 
+			  && ($dms_config['checkinout_enable'] == 1) )
+				{
+				$flag_enable_checkin = TRUE;
+				$check_in_out_href="file_checkin.php";
+				}
+			}
+
+		if($disp==TRUE)
+			{
+			print "  <tr>\r";
+			print "    <td ".$dms_config['class_content']." align='left' valign='top'><a title='".$title_image."'><img src='".$image."'></a></td>\r";
+			print "    <td></td>\r";
+
+			print "    <td align='left'>";
+			print "      <a href='#' title='".$title_text."' onclick='javascript:void(window.open(\"file_retrieve.php?function=view&obj_id=".$obj_id."\"))'>".$obj_name.$misc_text."</a></td>\r";
+			print "    <td></td>\r";
+
+			print "    <td align='center'>\r";
+			if ( ($perm >= EDIT) && ($dms_config['checkinout_enable'] == 1) )
+				{
+				switch ($sifted_results['obj_type'][$obj_index])
+					{
+					case FILE:
+					case ROUTEDDOC:
+						switch ($obj_status)
+							{
+							case NORMAL:
+								print "    <a href='file_checkout.php?obj_id=".$check_in_out_obj_id."'>" . _DMS_CHECKOUT  . "</a>\r";  
+								break;
+							case CHECKEDOUT:
+								if ($dms_user_id == $check_in_out_co_user_id)
+									print "    <a href='file_checkin.php?obj_id=".$check_in_out_obj_id."'>" . _DMS_CHECKIN  . "</a>\r";  
+								break;
+							}
+					}
+				}
+			print "  </td>\r";
+
+			print "  <td align='center'>\r";
+				if( ($perm >= READONLY) && ($sifted_results['obj_type'][$obj_index] == FILE) )
+					{
+					switch ($obj_status)
+						{
+						case NORMAL:
+							if ( ($sifted_results['lifecycle_id'][$obj_index] == 0) 
+							&& ($dms_anon_flag == 0) 
+							&& ($dms_config['routing_enable'] == 1) )
+								print "    <a href='file_route.php?obj_id=".$sifted_results['obj_id'][$obj_index]."'>" . _DMS_ROUTE  . "</a>\r";  // Route
+							else 
+								if ($sifted_results['lifecycle_id'][$obj_index] !=0 )
+									print "    <a href='lifecycle_promote.php?obj_id=".$sifted_results['obj_id'][$obj_index]."'>Promote</a>\r";  // Promote
+							break;
+						case DELETED:
+							if($dms_admin_flag == 1)
+								print "    <a href='obj_restore.php?obj_id=".$sifted_results['obj_id'][$obj_index]."'>" . _DMS_RESTORE . "</a>\r";  // Restore
+						}
+					}
+			print "  </td>\r";
+
+			print "  <td align='center'>\r";
+			if($flag_disp_options == TRUE)
+				{
+				if ( ( ($perm >= BROWSE) 
+				  && ($sifted_results['obj_status'][$obj_index] != DELETED) 
+				  && ($dms_anon_flag == 0) )
+				  || ($dms_admin_flag = 1) )
+					print "    <a href='".$options_url."?obj_id=".$sifted_results['obj_id'][$obj_index]."'>Options</a>\r";  // Properties
+				}
+			print "  </td>\r";
+			print "</tr>\r";
+			}
+
+/*
 
 		// Check if the object is a file
 		if($sifted_results['obj_type'][$obj_index] == FILE && $disp==TRUE)
 			{
-			// Object is a file
-			print "  <tr>\r";
-
-			print "    <td ".$dms_config['class_content']." align='left' valign='top'>";
-			
-			dms_display_document_icon($sifted_results['obj_id'][$obj_index],
-				$sifted_results['file_type'][$obj_index],
-				$sifted_results['obj_status'][$obj_index]);
-			
-			//dms_display_spaces(3);
-			
-			print "    </td>\r";
-/*
-			if($sifted_results['obj_status'][$obj_index] == DELETED)
-				{
-				print "    <td ".$class." align='left' colspan='2'><a title='" . _DMS_DELETED_DOC  . "'><img src='images/file_deleted.gif'></a>&nbsp;&nbsp;&nbsp;\r";
-				}
-			else
-				{
-				$file_image = "images/file_text.gif";
-				$title = _DMS_DOC_AVAILABLE;
-				if($sifted_results['obj_status'][$obj_index] == CHECKEDOUT) 
-					{
-					$file_image = "images/file_text_locked.gif";
-					$title = _DMS_DOC_NOT_AVAILABLE;
-					}
-				
-				print "    <td ".$class." align='left' colspan='2'><a title='" . $title . "'><img src='".$file_image."'></a>&nbsp;&nbsp;&nbsp;\r";
-				}
-*/
-			print "    <td></td>\r";
-			
-			// If there is text to display in misc_text, display it.
-			$misc_text = $sifted_results['misc_text'][$obj_index];
-			if (strlen($misc_text) >0)
-				{
-				$misc_text = "&nbsp;&nbsp;&nbsp;(".$misc_text.")";
-				}
-			else $misc_text = "";
-
-			print "    <td align='left'>";
-			if ($perm > BROWSE)
-				print "<a href='#' title='" . _DMS_VIEW_DOC  . "' onclick='javascript:void(window.open(\"file_retrieve.php?function=view&obj_id=".$sifted_results['obj_id'][$obj_index]."\"))'>".$sifted_results['obj_name'][$obj_index].$misc_text."</a></td>\r";
-			else
-				print $sifted_results['obj_name'][$obj_index].$misc_text."</td>\r";
-					
-			print "    <td></td>\r";
-
 			if( ($document_owner == $dms_config['updates_root_obj_id']) && ($dms_admin_flag==1) && ($document_owner != 0) )
 				{
 				print "      <td></td>\r";
 				print "      <td align='center'><a href='admin/update_manager.php?module_id=".$sifted_results['obj_id'][$obj_index]."'>Update</a></td>\r";
 				}
-			else
-				{
-				// Checkin/Checkout
-				switch ($sifted_results['obj_status'][$obj_index])
-					{
-					case NORMAL:
-						if ( ($perm >= EDIT) && ($dms_config['checkinout_enable'] == 1) )
-							print "    <td align=center><a href='file_checkout.php?obj_id=".$sifted_results['obj_id'][$obj_index]."'>" . _DMS_CHECKOUT  . "</a></td>\r";  
-						else 
-							print "    <td></td>\r";
-						break;
-					case CHECKEDOUT:
-						if (($dms_user_id == $sifted_results['obj_checked_out_user_id'][$obj_index]) && ($perm >= EDIT) && ($dms_config['checkinout_enable'] == 1))
-							print "    <td align=center><a href='file_checkin.php?obj_id=".$sifted_results['obj_id'][$obj_index]."'>" . _DMS_CHECKIN  . "</a></td>\r";  
-						else
-							print "    <td></td>\r";
-						break;
-					default:
-						print "    <td></td>\r";       
-					}
-
-				switch ($sifted_results['obj_status'][$obj_index])
-					{
-					case NORMAL:
-						if (($perm >= READONLY) && ($sifted_results['lifecycle_id'][$obj_index] == 0) && ($dms_anon_flag == 0) && ($dms_config['routing_enable'] == 1) )      
-							print "    <td align=center><a href='file_route.php?obj_id=".$sifted_results['obj_id'][$obj_index]."'>" . _DMS_ROUTE  . "</a></td>\r";  // Route
-						else 
-							{
-							if ($sifted_results['lifecycle_id'][$obj_index] !=0)
-								print "    <td align=center><a href='lifecycle_promote.php?obj_id=".$sifted_results['obj_id'][$obj_index]."'>Promote</a></td>\r";  // Promote
-							else 
-								print "    <td></td>\r";
-							}
-						break;  
-					case DELETED:
-						print "    <td align=center><a href='obj_restore.php?obj_id=".$sifted_results['obj_id'][$obj_index]."'>" . _DMS_RESTORE . "</a></td>\r";  // Restore
-						break;
-					default:
-						print "    <td></td>\r";
-					}
-				}	  
-			if ( ($perm >= BROWSE) && ($sifted_results['obj_status'][$obj_index] != DELETED) && ($dms_anon_flag == 0) )
-				print "    <td align=center><a href='file_options.php?obj_id=".$sifted_results['obj_id'][$obj_index]."'>" . _DMS_OPTIONS . "</a></td>\r";  // Properties
-			else
-				print "    <td></td>\r";
-			
-			print "  </tr>\r";
 			}
-		
-		if($sifted_results['obj_type'][$obj_index] == DOCLINK && $disp == TRUE)
-			{
-			// Object is a link
-			$link_query  = "SELECT obj_id,obj_name,obj_status,current_version_row_id,obj_checked_out_user_id ";
-			$link_query .= "from ".$dmsdb->prefix('dms_objects')." ";
-			$link_query .= "WHERE obj_id='".$sifted_results['ptr_obj_id'][$obj_index]."'";  
-			$link_result = $dmsdb->query($link_query,"ROW");
+*/
 
-			if($dms_admin_flag == 1)  $perm = OWNER;
-			else                $perm = dms_perms_level($sifted_results['ptr_obj_id'][$obj_index]);
-			print "  <tr>\r";    
-			
-			$file_image = "images/file_link.gif";
-			$title = _DMS_DOC_AVAILABLE;
-			if($link_result->obj_status == CHECKEDOUT) 
-				{
-				$file_image = "images/file_link_locked.gif";
-				$title = _DMS_DOC_NOT_AVAILABLE;
-				}
-			
-			print "    <td ".$class." align='left' colspan='2' valign='top'><a title='" . $title . "'><img src='".$file_image."'></a></td>\r";
-
-			if ($perm > BROWSE)
-				print "<td align='left'><a href='#' title='" . _DMS_VIEW_ROUTED_DOC ."' onclick='javascript:void(window.open(\"file_retrieve.php?function=view&obj_id=".$link_result->obj_id."\"))'>".$link_result->obj_name."</a></td>\r";
-			else
-				print "<td>".$link_result->obj_name."</td>\r";
-
-			print "    <td></td>\r";
-
-			// Checkin/Checkout
-			switch ($link_result->obj_status)
-				{
-				case NORMAL:
-					if ( ($perm >= EDIT) && ($dms_config['checkinout_enable'] == 1) )
-						print "    <td align=center><a href='file_checkout.php?obj_id=".$link_result->obj_id."'>" . _DMS_CHECKOUT ."</a></td>\r";  
-					else 
-						print "    <td></td>\r";
-					break;
-				case CHECKEDOUT:
-					if (($dms_user_id == $link_result->obj_checked_out_user_id) && ($perm >= EDIT) && ($dms_config['checkinout_enable'] == 1))
-						print "    <td align=center><a href='file_checkin.php?obj_id=".$link_result->obj_id."'>Check-in</a></td>\r";  
-					else
-						print "    <td></td>\r";
-					break;
-				default:
-					print "    <td></td>\r";       
-				}
-			print "    <td></td>\r";
-			print "    <td align=center><a href='link_options.php?obj_id=".$sifted_results['obj_id'][$obj_index]."'>" . _DMS_OPTIONS . "</a></td>\r";  // Properties
-			print "  </tr>\r";
-			}
-		
-		// Check if the object is a Web Page
-		if($sifted_results['obj_type'][$obj_index] == WEBPAGE && $disp==TRUE)
-			{
-			switch($perm)
-				{
-				case BROWSE:  
-					print "  <tr>\r";
-					print "    <td ".$class." align='left'><a title='Open Web Page'><img src='./images/www_open.gif'></a></td>\r";
-					print "    <td></td>\r";
-					print "    <td ".$class." align='left'>".$sifted_results['obj_name'][$obj_index]."</a></td>\r";
-					print "    <td colspan='4'><BR></td>\r";
-					print "  </tr>\r";
-					break;
-				case READONLY:
-					print "  <tr>\r";
-					print "    <td ".$class." align='left'><a title='Open Web Page'><img src='./images/www_open.gif'></a></td>\r";
-					print "    <td></td>\r";
-					print "    <td ".$class." align='left'><a href='#' title='Open Web Page' onclick='javascript:void(window.open(\"file_retrieve.php?function=view&obj_id=".$sifted_results['obj_id'][$obj_index]."\"))'>".$sifted_results['obj_name'][$obj_index]."</a></td>\r";
-					print "    <td colspan='4'><BR></td>\r";
-					print "  </tr>\r";
-					break;
-				case EDIT: 
-				case OWNER:
-					print "  <tr>\r";
-					print "    <td ".$class." align='left'><a title='Open Web Page'><img src='./images/www_open.gif'></a></td>\r";
-					print "    <td></td>\r";
-					print "    <td ".$class." align='left'><a href='#' title='Open Web Page' onclick='javascript:void(window.open(\"file_retrieve.php?function=view&obj_id=".$sifted_results['obj_id'][$obj_index]."\"))'>".$sifted_results['obj_name'][$obj_index]."</a></td>\r";
-					print "    <td colspan='3'><BR></td>\r";
-					print "    <td align=center><a href='url_options.php?obj_id=".$sifted_results['obj_id'][$obj_index]."'>Options</a></td>\r";
-					print "  </tr>\r";
-					break;
-				}
-			}
-		
-//		print "  </tr>\r";
 		}
-	//page_navigation($num_rows,$disp_start);
 	}
 
 // Top of page
@@ -783,43 +786,17 @@ while($result_data = $dmsdb->getarray($result))
 	} 
 $exp_folders[$index]=-1;
 
-// Get active folder
-$active_folder = dms_active_folder();
-$active_folder_perms = dms_perms_level($active_folder);
-
 // If the $active_folder_perms <= BROWSE close all folders.
 if( ($active_folder_perms) <= BROWSE && ($active_folder!=0) )
 	{
 	dms_redirect("folder_close_all.php");
 	exit(0);
 	}
-
-// Get the object type of the active folder, if applicable
-if ($active_folder!=0)
-	{
-	$query = "SELECT obj_type from ".$dmsdb->prefix("dms_objects")." WHERE obj_id='".$active_folder."'";
-	$active_folder_type = $dmsdb->query($query,'obj_type');
-	}
-else
-	{
-	$active_folder_type = 0;
-	}
-
-// Get the root folder for templates.  If the root folder == 0 then the "Create Document" option will not be displayed.
-$template_root_folder = $dms_config['template_root_obj_id'];
-  
-// If the user is an Admin, get the admin_display value
-if ($dms_admin_flag == 1)
-	{
-	$admin_display = $dms_config['admin_display'];
-	}
-else 
-	{
-	$admin_display = '0';
-	}
         
 print "<table width='100%' border='0'>\r";
-display_dms_header(3);
+
+dms_display_header(3,"","",FALSE);
+dms_display_main_interface_options(3);
 
 if($dms_current_version > $dms_config['version']) 
 	{
@@ -846,7 +823,7 @@ if(0 == strlen($dms_config['doc_path']))
 	exit(0);
 	}
 
-display_main_interface_options();
+//display_main_interface_options();
 
 print "</table>\r";
 
@@ -883,7 +860,7 @@ $loc_obj_id[$loc_index] = 0;
 	
 	
 $loc_between_flag = FALSE;
-$loc_max_string_length = 120;           // Set the maimum line length to 120
+$loc_max_string_length = 120;           // Set the maximum line length to 120
 
 $indent = 0;
 for($index = $loc_index; $index >= 0; $index--)
