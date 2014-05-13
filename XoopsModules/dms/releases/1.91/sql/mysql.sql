@@ -247,7 +247,7 @@ CREATE TABLE dms_object_versions (
 CREATE TABLE dms_object_version_comments (
   row_id bigint(14) unsigned NOT NULL auto_increment,
   dov_row_id bigint(14) unsigned NOT NULL default '0',
-  comment text NOT NULL default '',
+  comment text NOT NULL,
   PRIMARY KEY (row_id)
 ) TYPE=MyISAM;
 
@@ -373,7 +373,7 @@ CREATE TABLE dms_subscriptions (
 CREATE TABLE dms_groups (
   group_id bigint(14) unsigned NOT NULL auto_increment,
   group_name varchar(50) NOT NULL default '',
-  group_description text NOT NULL default '',
+  group_description text NOT NULL,
   group_type varchar(10) NOT NULL default 'PERMS',
   PRIMARY KEY (group_id)
 ) TYPE=MyISAM;
