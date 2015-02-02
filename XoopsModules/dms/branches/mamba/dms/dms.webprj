@@ -1,0 +1,187 @@
+<!DOCTYPE webproject>
+<webproject>
+  <project usePreviewPrefix="0" type="Local" previewPrefix="" name="dms" encoding="utf8" >
+    <upload/>
+    <defaultDTD>-//w3c//dtd html 4.01 transitional//en</defaultDTD>
+    <item url="admin/" uploadstatus="1" />
+    <item url="admin/inc_admin_functions.php" uploadstatus="1" />
+    <item url="admin/inc_update_manager.php" uploadstatus="1" />
+    <item url="admin/index.php" uploadstatus="1" />
+    <item url="admin/menu.php" uploadstatus="1" />
+    <item url="admin/update_manager.php" uploadstatus="1" />
+    <item url="admin/update_manager_config.php" uploadstatus="1" />
+    <item url="admin/update_manager_slct_release.php" uploadstatus="1" />
+    <item url="admin/update_manager_slct_root_dir.php" uploadstatus="1" />
+    <item url="images/" uploadstatus="1" />
+    <item url="images/1uparrow.png" uploadstatus="1" />
+    <item url="images/arrow_lt.png" uploadstatus="1" />
+    <item url="images/arrow_lt_begin.png" uploadstatus="1" />
+    <item url="images/arrow_rt.png" uploadstatus="1" />
+    <item url="images/arrow_top.png" uploadstatus="1" />
+    <item url="images/file.png" uploadstatus="1" />
+    <item url="images/file_deleted.png" uploadstatus="1" />
+    <item url="images/file_link.png" uploadstatus="1" />
+    <item url="images/file_link.xcf" uploadstatus="1" />
+    <item url="images/file_link_locked.png" uploadstatus="1" />
+    <item url="images/file_locked.png" uploadstatus="1" />
+    <item url="images/file_new.png" uploadstatus="1" />
+    <item url="images/file_text.png" uploadstatus="1" />
+    <item url="images/file_text_locked.png" uploadstatus="1" />
+    <item url="images/file_text_locked.xcf" uploadstatus="1" />
+    <item url="images/file_unlocked.png" uploadstatus="1" />
+    <item url="images/folder_closed.png" uploadstatus="1" />
+    <item url="images/folder_create.png" uploadstatus="1" />
+    <item url="images/folder_del_closed.png" uploadstatus="1" />
+    <item url="images/folder_del_open.png" uploadstatus="1" />
+    <item url="images/folder_open.png" uploadstatus="1" />
+    <item url="images/inbox_empty.png" uploadstatus="1" />
+    <item url="images/inbox_full.png" uploadstatus="1" />
+    <item url="images/index.html" uploadstatus="1" />
+    <item url="images/line.png" uploadstatus="1" />
+    <item url="images/lockoverlay.png" uploadstatus="1" />
+    <item url="images/logo.png" uploadstatus="1" />
+    <item url="images/logo.xcf" uploadstatus="1" />
+    <item url="images/search.png" uploadstatus="1" />
+    <item url="language/" uploadstatus="1" />
+    <item url="language/english/" uploadstatus="1" />
+    <item url="language/english/index.html" uploadstatus="1" />
+    <item url="language/english/main.php" uploadstatus="1" />
+    <item url="language/english/modinfo.php" uploadstatus="1" />
+    <item url="language/french/" uploadstatus="1" />
+    <item url="language/french/index.html" uploadstatus="1" />
+    <item url="language/french/main.php" uploadstatus="1" />
+    <item url="language/french/modinfo.php" uploadstatus="1" />
+    <item url="language/portugues.do.brasil/" uploadstatus="1" />
+    <item url="language/portugues.do.brasil/index.html" uploadstatus="1" />
+    <item url="language/portugues.do.brasil/main.php" uploadstatus="1" />
+    <item url="language/portugues.do.brasil/modinfo.php" uploadstatus="1" />
+    <item url="sql/" uploadstatus="1" />
+    <item url="sql/index.html" uploadstatus="1" />
+    <item url="sql/mysql.sql" uploadstatus="1" />
+    <item url="audit_log_detail.php" uploadstatus="1" />
+    <item url="audit_log_obj.php" uploadstatus="1" />
+    <item url="audit_log_select_user.php" uploadstatus="1" />
+    <item url="audit_log_user.php" uploadstatus="1" />
+    <item url="change_log.txt" uploadstatus="1" />
+    <item url="database_descript.txt" uploadstatus="1" />
+    <item url="file_checkin.php" uploadstatus="1" />
+    <item url="file_checkout.php" uploadstatus="1" />
+    <item url="file_checkout_cancel.php" uploadstatus="1" />
+    <item url="file_copy.php" uploadstatus="1" />
+    <item url="file_dir_import.php" uploadstatus="1" />
+    <item url="file_email.php" uploadstatus="1" />
+    <item url="file_import.php" uploadstatus="1" />
+    <item url="file_move.php" uploadstatus="1" />
+    <item url="file_new.php" uploadstatus="1" />
+    <item url="file_options.php" uploadstatus="1" />
+    <item url="file_restore.php" uploadstatus="1" />
+    <item url="file_retrieve.php" uploadstatus="1" />
+    <item url="file_route.php" uploadstatus="1" />
+    <item url="file_subscription.php" uploadstatus="1" />
+    <item url="folder_close_all.php" uploadstatus="1" />
+    <item url="folder_contract.php" uploadstatus="1" />
+    <item url="folder_expand.php" uploadstatus="1" />
+    <item url="folder_new.php" uploadstatus="1" />
+    <item url="folder_options.php" uploadstatus="1" />
+    <item url="folder_prop_perms.php" uploadstatus="1" />
+    <item url="folder_restore.php" uploadstatus="1" />
+    <item url="inc_current_version.php" uploadstatus="1" />
+    <item url="inc_defines.php" uploadstatus="1" />
+    <item url="inc_dest_path_and_file.php" uploadstatus="1" />
+    <item url="inc_dms_functions.php" uploadstatus="1" />
+    <item url="inc_file_properties.php" uploadstatus="1" />
+    <item url="inc_file_select.php" uploadstatus="1" />
+    <item url="inc_folder_select.php" uploadstatus="1" />
+    <item url="inc_lifecycle_functions.php" uploadstatus="1" />
+    <item url="inc_main_ui_2.php" uploadstatus="1" />
+    <item url="inc_pal.php" uploadstatus="1" />
+    <item url="inc_pal_xoops.php" uploadstatus="1" />
+    <item url="inc_perms_set.php" uploadstatus="1" />
+    <item url="index.php" uploadstatus="1" />
+    <item url="layersmenu.js" uploadstatus="1" />
+    <item url="lifecycle_apply.php" uploadstatus="1" />
+    <item url="lifecycle_demote.php" uploadstatus="1" />
+    <item url="lifecycle_editor.php" uploadstatus="1" />
+    <item url="lifecycle_manager.php" uploadstatus="1" />
+    <item url="lifecycle_promote.php" uploadstatus="1" />
+    <item url="lifecycle_stage_editor.php" uploadstatus="1" />
+    <item url="link_options.php" uploadstatus="1" />
+    <item url="readme.txt" uploadstatus="1" />
+    <item url="search_ft.php" uploadstatus="1" />
+    <item url="search_prop.php" uploadstatus="1" />
+    <item url="xoops_version.php" uploadstatus="1" />
+    <item url="" uploadstatus="1" />
+    <templates>templates/</templates>
+    <toolbars>toolbars/</toolbars>
+    <item url="config_write_swishe_config.php" uploadstatus="1" />
+    <item url="config_main.php" uploadstatus="1" />
+    <item url="config_doc_templates_slct_root_dir.php" uploadstatus="1" />
+    <item url="group_editor.php" uploadstatus="1" />
+    <item url="inc_notify_set.php" uploadstatus="1" />
+    <item url="config_repo.php" uploadstatus="1" />
+    <item url="statistics.php" uploadstatus="1" />
+    <debuggers>
+      <Gubed>
+        <serverhost>localhost</serverhost>
+        <serverport>8026</serverport>
+        <localbasedir/>
+        <serverbasedir/>
+        <useproxy>0</useproxy>
+        <listenport>8016</listenport>
+        <displaydelay>0</displaydelay>
+        <errormask>0</errormask>
+      </Gubed>
+    </debuggers>
+    <author>Brian E. Reifsnyder</author>
+    <email>breifsnyde@state.pa.us</email>
+    <debuggerclient>No debugger</debuggerclient>
+    <exclude cvsignore="false" />
+    <teamdata>
+      <taskleaders/>
+      <subprojectleaders/>
+      <mailinglist address="" />
+    </teamdata>
+    <events/>
+    <item url="folder_move.php" uploadstatus="1" />
+    <item url="file_revert.php" uploadstatus="1" />
+    <item url="blocks/" uploadstatus="1" />
+    <item url="templates/blocks/dms_block_history.html" uploadstatus="1" />
+    <item url="templates/blocks/" uploadstatus="1" />
+    <item url="templates/" uploadstatus="1" />
+    <item url="mms_create_1.php" uploadstatus="1" />
+    <item url="mms_create_2.php" uploadstatus="1" />
+    <item url="mms_create_3.php" uploadstatus="1" />
+    <item url="config_help_system.php" uploadstatus="1" />
+    <item url="inc_file_copy.php" uploadstatus="1" />
+    <item url="folder_config_change.php" uploadstatus="1" />
+    <item url="folder_content_report.php" uploadstatus="1" />
+    <item url="folder_archive.php" uploadstatus="1" />
+    <item url="perms_manager.php" uploadstatus="1" />
+    <item url="perms_editor.php" uploadstatus="1" />
+    <item url="folder_copy.php" uploadstatus="1" />
+    <item url="link_move.php" uploadstatus="1" />
+    <item url="job_server.php" uploadstatus="1" />
+    <item url="config_write_js_config.php" uploadstatus="1" />
+    <item url="job_server_manager.php" uploadstatus="1" />
+    <item url="inc_job_server_functions.php" uploadstatus="1" />
+    <item url="file_retrieve_extern.php" uploadstatus="1" />
+    <item url="inc_extern_dmsdb_access.php" uploadstatus="1" />
+    <item url="inc_file_upload.php" uploadstatus="1" />
+    <item url="url_add.php" uploadstatus="1" />
+    <item url="url_options.php" uploadstatus="1" />
+    <item url="obj_delete.php" uploadstatus="1" />
+    <item url="file_recall.php" uploadstatus="1" />
+    <item url="file_batch_import.php" uploadstatus="1" />
+    <treestatus>
+      <openfolder url="admin" />
+    </treestatus>
+    <annotations/>
+    <item url="folder_link_options.php" uploadstatus="1" />
+    <item url="link_create.php" uploadstatus="1" />
+    <item url="folder_copy_by_id.php" uploadstatus="1" />
+    <item url="inc_main_ui_4.php" uploadstatus="1" />
+    <item url="obj_select.php" uploadstatus="1" />
+    <item url="inc_obj_select.php" uploadstatus="1" />
+    <item url="obj_email.php" />
+  </project>
+</webproject>
